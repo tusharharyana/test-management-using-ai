@@ -1,6 +1,7 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 
 import HomePage from "../pages/HomePage";
+
 import JoinTestPage from "../pages/student/JoinTestPage";
 import TestPage from "../pages/student/TestPage";
 import SubmissionSuccessPage from "../pages/student/SubmissionSuccessPage";
@@ -9,14 +10,23 @@ import TeacherDashboard from "../pages/teacher/TeacherDashboard";
 import CreateTestPage from "../pages/teacher/CreateTestPage";
 import TestResultsPage from "../pages/teacher/TestResultsPage";
 import StudentResultPage from "../pages/teacher/StudentResultPage";
+import TeacherLoginPage from "../pages/teacher/TeacherLoginPage";
+
+import ProtectedTeacherRoute from "../components/auth/ProtectedTeacherRoute";
 
 function AppRouter() {
   return (
     <BrowserRouter>
       <Routes>
+        {/* =========================
+            PUBLIC HOME ROUTE
+        ========================== */}
+
         <Route path="/" element={<HomePage />} />
 
-        {/* Student routes */}
+        {/* =========================
+            PUBLIC STUDENT ROUTES
+        ========================== */}
 
         <Route path="/student/join" element={<JoinTestPage />} />
 
@@ -24,23 +34,55 @@ function AppRouter() {
 
         <Route path="/student/success" element={<SubmissionSuccessPage />} />
 
-        {/* Teacher routes */}
+        {/* =========================
+            PUBLIC TEACHER LOGIN
+        ========================== */}
 
-        <Route path="/teacher" element={<TeacherDashboard />} />
+        <Route path="/teacher/login" element={<TeacherLoginPage />} />
 
-        <Route path="/teacher/tests/create" element={<CreateTestPage />} />
+        {/* =========================
+            PROTECTED TEACHER ROUTES
+        ========================== */}
+
+        <Route
+          path="/teacher"
+          element={
+            <ProtectedTeacherRoute>
+              <TeacherDashboard />
+            </ProtectedTeacherRoute>
+          }
+        />
+
+        <Route
+          path="/teacher/tests/create"
+          element={
+            <ProtectedTeacherRoute>
+              <CreateTestPage />
+            </ProtectedTeacherRoute>
+          }
+        />
 
         <Route
           path="/teacher/tests/:testId/results"
-          element={<TestResultsPage />}
+          element={
+            <ProtectedTeacherRoute>
+              <TestResultsPage />
+            </ProtectedTeacherRoute>
+          }
         />
 
         <Route
           path="/teacher/tests/:testId/results/:attemptId"
-          element={<StudentResultPage />}
+          element={
+            <ProtectedTeacherRoute>
+              <StudentResultPage />
+            </ProtectedTeacherRoute>
+          }
         />
 
-        {/* Unknown routes */}
+        {/* =========================
+            UNKNOWN ROUTES
+        ========================== */}
 
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

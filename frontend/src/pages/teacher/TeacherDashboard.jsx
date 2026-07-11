@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { activateTest, completeTest, getAllTests } from "../../api/testApi";
+import { logoutTeacher } from "../../utils/teacherAuth";
 
 function TeacherDashboard() {
   const navigate = useNavigate();
@@ -83,6 +84,14 @@ function TeacherDashboard() {
     }
   };
 
+  const handleLogout = () => {
+    logoutTeacher();
+
+    navigate("/teacher/login", {
+      replace: true,
+    });
+  };
+
   return (
     <div className="teacher-page">
       <header className="teacher-navbar">
@@ -95,12 +104,18 @@ function TeacherDashboard() {
           </div>
         </div>
 
-        <button
-          className="create-test-button"
-          onClick={() => navigate("/teacher/tests/create")}
-        >
-          + Create New Test
-        </button>
+        <div className="teacher-navbar-actions">
+          <button
+            className="create-test-button"
+            onClick={() => navigate("/teacher/tests/create")}
+          >
+            + Create New Test
+          </button>
+
+          <button className="teacher-logout-button" onClick={handleLogout}>
+            Logout
+          </button>
+        </div>
       </header>
 
       <main className="teacher-content">

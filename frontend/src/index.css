@@ -2176,3 +2176,157 @@ button {
     gap: 6px;
   }
 }
+/* ========================================
+   Teacher Login
+======================================== */
+
+.teacher-login-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 25px;
+  background:
+    radial-gradient(circle at top, rgba(79, 70, 229, 0.14), transparent 42%),
+    #f8fafc;
+}
+
+.teacher-login-card {
+  width: 100%;
+  max-width: 440px;
+  padding: 40px;
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+  background: white;
+  box-shadow: 0 20px 60px rgba(15, 23, 42, 0.1);
+}
+
+.teacher-login-logo {
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+  border-radius: 15px;
+  background: #4f46e5;
+  color: white;
+  font-size: 19px;
+  font-weight: 900;
+}
+
+.teacher-login-card h1 {
+  margin: 0 0 9px;
+  color: #172033;
+  font-size: 32px;
+  letter-spacing: -1px;
+}
+
+.teacher-login-description {
+  margin: 0 0 26px;
+  color: #64748b;
+  line-height: 1.7;
+}
+
+.teacher-login-error {
+  margin-bottom: 18px;
+  padding: 12px 14px;
+  border: 1px solid #fecaca;
+  border-radius: 9px;
+  background: #fef2f2;
+  color: #b91c1c;
+  font-size: 14px;
+}
+
+.teacher-login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.teacher-login-group label {
+  display: block;
+  margin-bottom: 8px;
+  color: #334155;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.teacher-login-group input {
+  width: 100%;
+  padding: 12px 13px;
+  border: 1px solid #dbe2ea;
+  border-radius: 9px;
+  outline: none;
+  background: white;
+  color: #172033;
+  font-size: 15px;
+}
+
+.teacher-login-group input:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.teacher-login-button {
+  min-height: 47px;
+  margin-top: 4px;
+  border: none;
+  border-radius: 9px;
+  background: #4f46e5;
+  color: white;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.teacher-login-button:hover {
+  background: #4338ca;
+}
+
+.teacher-login-home-button {
+  display: block;
+  margin: 22px auto 0;
+  border: none;
+  background: transparent;
+  color: #64748b;
+  font-weight: 700;
+}
+
+.teacher-navbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.teacher-logout-button {
+  min-height: 43px;
+  padding: 0 16px;
+  border: 1px solid #fecaca;
+  border-radius: 9px;
+  background: #fef2f2;
+  color: #dc2626;
+  font-weight: 800;
+}
+
+.teacher-logout-button:hover {
+  background: #fee2e2;
+}
+
+@media (max-width: 550px) {
+  .teacher-login-card {
+    padding: 30px 22px;
+  }
+
+  .teacher-login-card h1 {
+    font-size: 28px;
+  }
+
+  .teacher-navbar-actions {
+    gap: 5px;
+  }
+
+  .teacher-logout-button {
+    padding: 0 10px;
+    font-size: 12px;
+  }
+}
