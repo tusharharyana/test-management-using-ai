@@ -1,0 +1,13 @@
+# Maven
+backend/target/
+
+# Environment files
+frontend/.env
+backend/.env
+
+# Node
+frontend/node_modules/
+
+# IDE
+.idea/
+.vscode/
