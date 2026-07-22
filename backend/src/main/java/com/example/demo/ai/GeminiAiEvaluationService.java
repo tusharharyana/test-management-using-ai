@@ -92,22 +92,66 @@ public class GeminiAiEvaluationService
 
                 IMPORTANT:
                 - No hidden test cases are available.
+                - The code is NOT compiled or executed.
                 - Analyze the source code statically.
-                - Identify logical bugs and edge cases.
-                - Do not assume code is correct just because the general approach looks correct.
-                - Check syntax and completeness.
-                - Check time and space complexity.
-                - Be consistent and strict but fair.
+                - Focus primarily on the student's algorithm, logic, and problem-solving approach.
+                - This is an educational coding platform, not a strict online judge.
+                - Students may submit LeetCode-style solutions (class Solution), function-only implementations, or complete programs with main().
+                - Do NOT deduct marks for missing main(), class Solution, driver code, input/output handling, or other boilerplate code.
+                - Do NOT heavily penalize minor syntax mistakes (missing semicolons, brackets, imports, namespace declarations, etc.) if the intended algorithm is clear.
+                - Reward partial correctness and good problem-solving.
+                - Deduct significant marks only when the algorithm is incorrect, incomplete, inefficient, or fails to handle important edge cases.
+                - Be fair, constructive, and moderately lenient while maintaining consistency.
+
+                IMPORTANT EVALUATION RULES:
+                - This is a competitive programming solution, not a complete software application.
+                - Students may submit solutions in different valid formats such as:
+                * LeetCode style (class Solution with only the required function)
+                * Function-only implementation
+                * Complete program with main() and input/output handling
+                - DO NOT deduct marks because the solution does not contain:
+                * main() function
+                * class Solution wrapper
+                * Driver code
+                * Input/output handling
+                * Scanner/cin/cout code
+                * Boilerplate code
+                * Package declarations or include statements, unless they are essential to understanding the solution.
+                - Assume the online judge provides the driver code and invokes the required function correctly.
+                - Evaluate the algorithm and implementation only.
+                - Deduct significant marks only when the core algorithm is fundamentally incorrect, largely incomplete, or clearly incapable of solving the problem.
+                
+                Additional Rules:
+                - Never reduce marks only because main(), driver code, or class Solution is missing.
+                - If the algorithm is correct but written as a LeetCode-style function, evaluate it as a valid competitive programming solution.
+                - If the algorithm cannot be understood because essential implementation is missing, deduct marks accordingly.
+                - If the algorithm is correct but written as a function, evaluate it as a valid competitive programming solution.
 
                 MARKING RUBRIC:
 
-                1. Logic and correctness: 0 to 15 marks
-                2. Edge-case handling: 0 to 6 marks
-                3. Efficiency: 0 to 4 marks
-                4. Code quality: 0 to 3 marks
-                5. Syntax and completeness: 0 to 2 marks
+                Maximum Marks for this question: %d
 
-                Total maximum score: 30.
+                Distribute marks proportionally according to the maximum marks.
+
+                Suggested weightage:
+
+                - Logic & Correctness: 50%%
+                - Edge Case Handling: 20%%
+                - Efficiency: 13%%
+                - Code Quality: 10%%
+                - Syntax & Completeness: 7%%
+
+                Scoring Philosophy:
+                - Reward understanding and the correct approach over perfect syntax.
+                - Award generous partial credit if the algorithm is mostly correct.
+                - Do not be overly strict because the code is not executed.
+                - Reserve very low marks only for completely incorrect or unrelated solutions.
+                - This evaluation is for educational assessment, not competitive ranking.
+                - Give the benefit of the doubt when the student's intended algorithm is clear.
+                - Minor syntax mistakes should result in only small deductions.
+                - If the overall approach is correct but implementation has small mistakes, award between 70%% and 90%% of the available marks.
+                - Use very low scores only when the solution is largely unrelated, missing, or fundamentally incorrect.
+                Here is the problem statement:
 
                 PROBLEM TITLE:
                 %s
@@ -138,18 +182,19 @@ public class GeminiAiEvaluationService
                   "codeQualityScore": 0,
                   "syntaxScore": 0,
                   "confidence": 0,
-                  "feedback": "Short explanation of the evaluation"
+                  "feedback": "A constructive explanation highlighting what the student did correctly, what mistakes were found, and how the solution can be improved."
                 }
 
                 Rules:
                 - score must equal the sum of all five category scores.
-                - score must be between 0 and 30.
+                - score must be between 0 and the Maximum Marks for this question.
                 - confidence must be between 0 and 100.
                 - Do not include markdown.
                 - Do not include ```json.
                 - Return JSON only.
                 """
                 .formatted(
+                        question.getMaxMarks(), 
                         question.getTitle(),
                         question.getProblemStatement(),
                         question.getExamples(),
