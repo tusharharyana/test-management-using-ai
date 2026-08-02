@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 import { getTestResults } from "../../api/resultApi";
+import { exportTestResults } from "../../api/exportApi";
 
 function TestResultsPage() {
   const navigate = useNavigate();
@@ -95,6 +96,30 @@ function TestResultsPage() {
 
       default:
         return "result-status-default";
+    }
+  };
+
+  const handleExport = async () => {
+    try {
+      const blob = await exportTestResults(testId);
+
+      const url = window.URL.createObjectURL(blob);
+
+      const link = document.createElement("a");
+
+      link.href = url;
+
+      link.download = `Test_${testId}_Results.xlsx`;
+
+      document.body.appendChild(link);
+
+      link.click();
+
+      link.remove();
+
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      alert("Failed to export Excel.");
     }
   };
 
@@ -195,6 +220,9 @@ function TestResultsPage() {
               value={searchTerm}
               onChange={(event) => setSearchTerm(event.target.value)}
             />
+            <button onClick={handleExport} className="export-excel-button">
+              Export Excel
+            </button>
           </div>
 
           {loading ? (

@@ -2330,3 +2330,42 @@ button {
     font-size: 12px;
   }
 }
+.results-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.export-excel-button {
+  background: #16a34a;
+  color: white;
+  border: none;
+  padding: 12px 22px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 600;
+  transition: 0.25s;
+  white-space: nowrap;
+}
+
+.export-excel-button:hover {
+  background: #15803d;
+  transform: translateY(-1px);
+}
+
+.export-excel-button:active {
+  transform: scale(0.98);
+}
+
+@media (max-width: 768px) {
+  .results-header-actions {
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .export-excel-button {
+    width: 100%;
+  }
+}
