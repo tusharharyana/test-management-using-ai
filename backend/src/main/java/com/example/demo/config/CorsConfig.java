@@ -17,6 +17,7 @@ public class CorsConfig implements WebMvcConfigurer {
                 .allowedOrigins(
                         "http://localhost:5173"
                 )
+                .allowedOriginPatterns("*")
                 .allowedMethods(
                         "GET",
                         "POST",
