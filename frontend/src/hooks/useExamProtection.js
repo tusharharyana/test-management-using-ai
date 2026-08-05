@@ -208,8 +208,6 @@ export default function useExamProtection({ maxWarnings = 3, onAutoSubmit }) {
   return {
     warningCount,
 
-    isFullscreen,
-
     requestFullscreen,
 
     continueExam,
@@ -217,5 +215,7 @@ export default function useExamProtection({ maxWarnings = 3, onAutoSubmit }) {
     showViolationModal,
 
     violationReason,
+
+    maxWarnings,
   };
 }

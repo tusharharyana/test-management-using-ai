@@ -10,6 +10,7 @@ import { createSubmission } from "../../api/submissionApi";
 
 import { submitTestAttempt } from "../../api/attemptApi";
 import useExamProtection from "../../hooks/useExamProtection";
+import ExamViolationModal from "../../components/exam/ExamViolationModal";
 
 const DEFAULT_CODE = {
   CPP: `#include <iostream>
@@ -56,8 +57,21 @@ function TestPage() {
   const [error, setError] = useState("");
 
   const [showSubmitConfirmation, setShowSubmitConfirmation] = useState(false);
-  const { warningCount, requestFullscreen } = useExamProtection({
+  const {
+    warningCount,
+
+    requestFullscreen,
+
+    continueExam,
+
+    showViolationModal,
+
+    violationReason,
+
+    maxWarnings,
+  } = useExamProtection({
     maxWarnings: 3,
+
     onAutoSubmit: () => submitAllAnswers(true),
   });
   /*
@@ -490,6 +504,13 @@ function TestPage() {
           </div>
         </div>
       )}
+      <ExamViolationModal
+        open={showViolationModal}
+        reason={violationReason}
+        warningCount={warningCount}
+        maxWarnings={maxWarnings}
+        onContinue={continueExam}
+      />
     </div>
   );
 }
