@@ -9,6 +9,7 @@ import TestTimer from "../../components/student/TestTimer";
 import { createSubmission } from "../../api/submissionApi";
 
 import { submitTestAttempt } from "../../api/attemptApi";
+import useExamProtection from "../../hooks/useExamProtection";
 
 const DEFAULT_CODE = {
   CPP: `#include <iostream>
@@ -55,11 +56,18 @@ function TestPage() {
   const [error, setError] = useState("");
 
   const [showSubmitConfirmation, setShowSubmitConfirmation] = useState(false);
-
+  const { warningCount, requestFullscreen } = useExamProtection({
+    maxWarnings: 3,
+    onAutoSubmit: () => submitAllAnswers(true),
+  });
   /*
    * Load current test attempt from sessionStorage.
    */
-
+  useEffect(() => {
+    if (attempt) {
+      requestFullscreen();
+    }
+  }, [attempt]);
   useEffect(() => {
     const storedAttempt = sessionStorage.getItem("currentTestAttempt");
 
@@ -340,7 +348,11 @@ function TestPage() {
 
         <div className="test-title-header">{attempt.testTitle}</div>
 
-        <TestTimer expiresAt={attempt.expiresAt} onTimeUp={handleTimeUp} />
+        <div className="exam-header-right">
+          <div className="warning-box">⚠ Warnings: {warningCount}/3</div>
+
+          <TestTimer expiresAt={attempt.expiresAt} onTimeUp={handleTimeUp} />
+        </div>
       </header>
 
       {/* Main content */}

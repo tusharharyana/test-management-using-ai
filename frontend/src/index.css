@@ -2369,3 +2369,18 @@ button {
     width: 100%;
   }
 }
+.exam-header-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  justify-content: flex-end;
+}
+
+.warning-box {
+  background: #fff3cd;
+  color: #856404;
+  border: 1px solid #ffeeba;
+  border-radius: 8px;
+  padding: 10px 18px;
+  font-weight: 700;
+}
