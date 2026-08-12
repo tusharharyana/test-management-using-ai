@@ -1,8 +1,10 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { downloadMyTest } from "../../api/exportApi";
 
 function SubmissionSuccessPage() {
   const navigate = useNavigate();
-
+  const [downloading, setDownloading] = useState(false);
   const storedResult = sessionStorage.getItem("lastSubmissionResult");
 
   let result = null;
@@ -12,6 +14,43 @@ function SubmissionSuccessPage() {
   } catch {
     result = null;
   }
+
+  const handleDownloadTest = async () => {
+    if (!result?.attemptId) {
+      alert("Unable to find your test attempt.");
+      return;
+    }
+
+    try {
+      setDownloading(true);
+
+      const pdf = await downloadMyTest(result.attemptId);
+
+      const url = window.URL.createObjectURL(pdf);
+
+      const link = document.createElement("a");
+
+      link.href = url;
+
+      link.download = `${result.testTitle || "My_Test"}_Submission.pdf`;
+
+      document.body.appendChild(link);
+
+      link.click();
+
+      link.remove();
+
+      window.URL.revokeObjectURL(url);
+
+    } catch (error) {
+      console.error("Failed to download test:", error);
+
+      alert("Unable to download your test. Please try again.");
+
+    } finally {
+      setDownloading(false);
+    }
+  };
 
   return (
     <div className="success-page">
@@ -50,16 +89,29 @@ function SubmissionSuccessPage() {
           </div>
         )}
 
-        <button
-          className="return-home-button"
-          onClick={() => {
-            sessionStorage.removeItem("lastSubmissionResult");
+        <div className="success-action-buttons">
 
-            navigate("/");
-          }}
-        >
-          Return to Home
-        </button>
+          <button
+            className="download-test-button"
+            onClick={handleDownloadTest}
+            disabled={downloading}
+          >
+            {downloading
+              ? "Preparing PDF..."
+              : "Download My Test"}
+          </button>
+
+          <button
+            className="return-home-button"
+            onClick={() => {
+              sessionStorage.removeItem("lastSubmissionResult");
+              navigate("/");
+            }}
+          >
+            Return to Home
+          </button>
+
+        </div>
       </div>
     </div>
   );
