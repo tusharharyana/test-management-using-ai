@@ -57,6 +57,9 @@ function TestPage() {
   const examEndedRef = useRef(false);
 
   const [error, setError] = useState("");
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
+
+  const [showReconnectedMessage, setShowReconnectedMessage] = useState(false);
 
   const [showSubmitConfirmation, setShowSubmitConfirmation] = useState(false);
   const {
@@ -71,6 +74,33 @@ function TestPage() {
     isExamActive: !examEnded && !submitting,
     onAutoSubmit: () => submitAllAnswers(true),
   });
+
+  useEffect(() => {
+    const handleOffline = () => {
+      setIsOnline(false);
+    };
+
+    const handleOnline = () => {
+      setIsOnline(true);
+
+      setShowReconnectedMessage(true);
+
+      setTimeout(() => {
+        setShowReconnectedMessage(false);
+      }, 3000);
+    };
+
+    window.addEventListener("offline", handleOffline);
+
+    window.addEventListener("online", handleOnline);
+
+    return () => {
+      window.removeEventListener("offline", handleOffline);
+
+      window.removeEventListener("online", handleOnline);
+    };
+  }, []);
+
   /*
    * Load current test attempt from sessionStorage.
    */
@@ -364,6 +394,24 @@ function TestPage() {
 
   return (
     <div className="coding-test-page">
+      {!isOnline && (
+        <div className="internet-status-banner offline">
+          <strong>⚠ Internet connection lost</strong>
+
+          <span>
+            Your answers are being saved on this device. Please reconnect to
+            continue submitting your test.
+          </span>
+        </div>
+      )}
+
+      {showReconnectedMessage && (
+        <div className="internet-status-banner online">
+          <strong>✓ Internet connection restored</strong>
+
+          <span>You can continue your test normally.</span>
+        </div>
+      )}
       {/* Header */}
 
       <header className="test-header">
@@ -464,7 +512,7 @@ function TestPage() {
 
             <button
               className="final-submit-button"
-              disabled={submitting}
+              disabled={submitting || !isOnline}
               onClick={() => setShowSubmitConfirmation(true)}
             >
               {submitting ? "Submitting..." : "Submit Test"}
@@ -513,7 +561,7 @@ function TestPage() {
               <button
                 className="confirm-submit-button"
                 onClick={() => submitAllAnswers(false)}
-                disabled={submitting}
+                disabled={submitting || !isOnline}
               >
                 {submitting ? "Submitting..." : "Yes, Submit Test"}
               </button>
