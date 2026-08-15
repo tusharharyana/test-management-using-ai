@@ -1,6 +1,8 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "questions")
@@ -32,6 +34,13 @@ public class Question {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "test_id", nullable = false)
     private Test test;
+    @OneToMany(
+        mappedBy = "question",
+        cascade = CascadeType.ALL,
+        orphanRemoval = true
+    )
+    @OrderBy("testCaseOrder ASC")
+    private List<TestCase> testCases = new ArrayList<>();
 
 
     // =========================
@@ -120,5 +129,25 @@ public class Question {
 
     public void setTest(Test test) {
         this.test = test;
+    }
+    public List<TestCase> getTestCases() {
+    return testCases;
+    }
+
+    public void setTestCases(List<TestCase> testCases) {
+        this.testCases = testCases;
+    }
+    public void addTestCase(TestCase testCase) {
+
+    testCases.add(testCase);
+
+    testCase.setQuestion(this);
+    }
+
+    public void removeTestCase(TestCase testCase) {
+
+        testCases.remove(testCase);
+
+        testCase.setQuestion(null);
     }
 }

@@ -3,6 +3,10 @@ package com.example.demo.dto.request;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.NotEmpty;
+import java.util.List;
 
 public class CreateQuestionRequest {
 
@@ -32,9 +36,15 @@ public class CreateQuestionRequest {
     )
     private Integer questionOrder;
 
-
-    public CreateQuestionRequest() {
-    }
+    @Valid
+    @NotEmpty(message = "At least one test case is required")
+    @Size(
+            max = 10,
+            message = "A question can have at most 10 test cases"
+    )
+    private List<TestCaseRequest> testCases;
+        public CreateQuestionRequest() {
+        }
 
 
     public String getTitle() {
@@ -88,5 +98,12 @@ public class CreateQuestionRequest {
             Integer questionOrder
     ) {
         this.questionOrder = questionOrder;
+    }
+     public List<TestCaseRequest> getTestCases() {
+        return testCases;
+    }
+
+    public void setTestCases(List<TestCaseRequest> testCases) {
+        this.testCases = testCases;
     }
 }

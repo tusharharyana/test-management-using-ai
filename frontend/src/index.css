@@ -3748,3 +3748,171 @@ button {
 .submitted-code code {
   font-family: inherit;
 }
+
+/* =========================================
+   TEST CASES
+========================================= */
+
+.test-cases-section {
+  margin-top: 28px;
+
+  padding-top: 24px;
+
+  border-top: 1px solid #e2e8f0;
+}
+
+.test-cases-header {
+  display: flex;
+
+  align-items: center;
+  justify-content: space-between;
+
+  margin-bottom: 16px;
+}
+
+.test-cases-header h3 {
+  margin: 0;
+
+  font-size: 15px;
+
+  font-weight: 700;
+
+  color: #0f172a;
+}
+
+.test-cases-header p {
+  margin: 4px 0 0;
+
+  color: #64748b;
+
+  font-size: 12px;
+}
+
+.test-case-count {
+  padding: 5px 9px;
+
+  border-radius: 6px;
+
+  background: #eff6ff;
+
+  color: #2563eb;
+
+  font-size: 11px;
+
+  font-weight: 700;
+}
+
+/* =========================================
+   TEST CASE CARD
+========================================= */
+
+.test-case-card {
+  margin-bottom: 14px;
+
+  padding: 16px;
+
+  background: #f8fafc;
+
+  border: 1px solid #e2e8f0;
+
+  border-radius: 10px;
+}
+
+.test-case-card-header {
+  display: flex;
+
+  align-items: center;
+  justify-content: space-between;
+
+  margin-bottom: 14px;
+}
+
+.test-case-card-header strong {
+  font-size: 13px;
+
+  color: #334155;
+}
+
+.remove-test-case-button {
+  border: none;
+
+  background: transparent;
+
+  color: #dc2626;
+
+  font-size: 12px;
+
+  font-weight: 600;
+
+  cursor: pointer;
+}
+
+.remove-test-case-button:hover {
+  color: #b91c1c;
+}
+
+/* =========================================
+   TEST CASE GRID
+========================================= */
+
+.test-case-grid {
+  display: grid;
+
+  grid-template-columns: 1fr 1fr;
+
+  gap: 16px;
+}
+
+/* =========================================
+   ADD TEST CASE
+========================================= */
+
+.add-test-case-button {
+  height: 40px;
+
+  padding: 0 15px;
+
+  border: 1px dashed #93c5fd;
+
+  border-radius: 8px;
+
+  background: #eff6ff;
+
+  color: #2563eb;
+
+  font-size: 13px;
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: 0.2s ease;
+}
+
+.add-test-case-button:hover:not(:disabled) {
+  background: #dbeafe;
+
+  border-color: #60a5fa;
+}
+
+.add-test-case-button:disabled {
+  opacity: 0.55;
+
+  cursor: not-allowed;
+}
+
+/* =========================================
+   RESPONSIVE
+========================================= */
+
+@media (max-width: 700px) {
+  .test-case-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .test-cases-header {
+    align-items: flex-start;
+
+    gap: 10px;
+  }
+}
