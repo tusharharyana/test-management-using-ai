@@ -12,17 +12,33 @@ import useExamProtection from "../../hooks/useExamProtection";
 import ExamViolationModal from "../../components/exam/ExamViolationModal";
 
 const DEFAULT_CODE = {
-  CPP: `#include <iostream>
+  CPP: `#include <bits/stdc++.h>
 using namespace std;
+
+class Solution {
+public:
+
+    // Write your method here
+
+
+};
 
 int main() {
 
     // Write your solution here
 
+
     return 0;
 }`,
 
   JAVA: `import java.util.*;
+
+class Solution {
+
+    // Write your method here
+
+
+}
 
 public class Main {
 
@@ -30,11 +46,26 @@ public class Main {
 
         // Write your solution here
 
+
     }
 }`,
 
-  PYTHON: `# Write your solution here
+  PYTHON: `class Solution:
 
+    # Write your method here
+
+    pass
+
+
+def main():
+
+    # Write your solution here
+
+    pass
+
+
+if __name__ == "__main__":
+    main()
 `,
 };
 
