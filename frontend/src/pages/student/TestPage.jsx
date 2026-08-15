@@ -1,5 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
-
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 import CodeEditor from "../../components/student/CodeEditor";
@@ -53,25 +52,23 @@ function TestPage() {
   const [answers, setAnswers] = useState({});
 
   const [submitting, setSubmitting] = useState(false);
+  const [examEnded, setExamEnded] = useState(false);
+  const submittingRef = useRef(false);
+  const examEndedRef = useRef(false);
 
   const [error, setError] = useState("");
 
   const [showSubmitConfirmation, setShowSubmitConfirmation] = useState(false);
   const {
     warningCount,
-
     requestFullscreen,
-
     continueExam,
-
     showViolationModal,
-
     violationReason,
-
     maxWarnings,
   } = useExamProtection({
     maxWarnings: 3,
-
+    isExamActive: !examEnded && !submitting,
     onAutoSubmit: () => submitAllAnswers(true),
   });
   /*
@@ -235,9 +232,16 @@ function TestPage() {
 
   const submitAllAnswers = useCallback(
     async (autoSubmit = false) => {
-      if (submitting || !attempt) {
+      if (!attempt) {
         return;
       }
+
+      // Prevent duplicate submissions
+      if (submittingRef.current) {
+        return;
+      }
+
+      submittingRef.current = true;
 
       setSubmitting(true);
 
@@ -321,6 +325,8 @@ function TestPage() {
 
         setError(message);
 
+        submittingRef.current = false;
+
         setSubmitting(false);
       }
     },
@@ -332,6 +338,17 @@ function TestPage() {
    */
 
   const handleTimeUp = useCallback(() => {
+    // Already ended
+    if (examEndedRef.current) {
+      return;
+    }
+
+    // Mark exam as ended immediately
+    examEndedRef.current = true;
+
+    setExamEnded(true);
+
+    // Automatically submit
     submitAllAnswers(true);
   }, [submitAllAnswers]);
 

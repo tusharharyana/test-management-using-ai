@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 function TestTimer({ expiresAt, onTimeUp }) {
   const calculateRemainingSeconds = () => {
@@ -7,8 +7,7 @@ function TestTimer({ expiresAt, onTimeUp }) {
     }
 
     const expiryTime = new Date(expiresAt).getTime();
-
-    const currentTime = new Date().getTime();
+    const currentTime = Date.now();
 
     return Math.max(0, Math.floor((expiryTime - currentTime) / 1000));
   };
@@ -17,20 +16,47 @@ function TestTimer({ expiresAt, onTimeUp }) {
     calculateRemainingSeconds,
   );
 
+  // Important:
+  // prevents onTimeUp from being called more than once
+  const timeUpCalledRef = useRef(false);
+
   useEffect(() => {
-    const interval = setInterval(() => {
+    // Reset only when a NEW exam expiry time is received
+    timeUpCalledRef.current = false;
+
+    const updateTimer = () => {
       const remaining = calculateRemainingSeconds();
 
       setRemainingSeconds(remaining);
 
       if (remaining <= 0) {
-        clearInterval(interval);
+        if (!timeUpCalledRef.current) {
+          timeUpCalledRef.current = true;
+          onTimeUp?.();
+        }
 
-        onTimeUp?.();
+        return true;
+      }
+
+      return false;
+    };
+
+    // Check immediately
+    if (updateTimer()) {
+      return;
+    }
+
+    const interval = setInterval(() => {
+      const finished = updateTimer();
+
+      if (finished) {
+        clearInterval(interval);
       }
     }, 1000);
 
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+    };
   }, [expiresAt, onTimeUp]);
 
   const hours = Math.floor(remainingSeconds / 3600);

@@ -1,6 +1,10 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
-export default function useExamProtection({ maxWarnings = 3, onAutoSubmit }) {
+export default function useExamProtection({
+  maxWarnings = 3,
+  onAutoSubmit,
+  isExamActive = true,
+}) {
   const [warningCount, setWarningCount] = useState(0);
 
   const [showViolationModal, setShowViolationModal] = useState(false);
@@ -11,16 +15,37 @@ export default function useExamProtection({ maxWarnings = 3, onAutoSubmit }) {
     !!document.fullscreenElement,
   );
 
+  // Prevent multiple auto-submit calls
+  const autoSubmitTriggeredRef = useRef(false);
+
   const addWarning = useCallback(
     (reason) => {
-      setViolationReason(reason);
+      // Exam has already ended
+      if (!isExamActive) {
+        return;
+      }
 
+      // Auto-submit has already been triggered
+      if (autoSubmitTriggeredRef.current) {
+        return;
+      }
+
+      setViolationReason(reason);
       setShowViolationModal(true);
 
       setWarningCount((previous) => {
+        // Never allow warning count to go beyond maxWarnings
+        if (previous >= maxWarnings) {
+          return previous;
+        }
+
         const next = previous + 1;
 
         if (next >= maxWarnings) {
+          autoSubmitTriggeredRef.current = true;
+
+          setShowViolationModal(false);
+
           if (onAutoSubmit) {
             onAutoSubmit();
           }
@@ -29,25 +54,42 @@ export default function useExamProtection({ maxWarnings = 3, onAutoSubmit }) {
         return next;
       });
     },
-    [maxWarnings, onAutoSubmit],
+    [maxWarnings, onAutoSubmit, isExamActive],
   );
+
   const continueExam = async () => {
+    if (!isExamActive) {
+      return;
+    }
+
     setShowViolationModal(false);
 
     await requestFullscreen();
   };
 
   const requestFullscreen = async () => {
+    if (!isExamActive) {
+      return;
+    }
+
     try {
       if (!document.fullscreenElement) {
         await document.documentElement.requestFullscreen();
       }
     } catch (error) {
-      console.error(error);
+      console.error("Fullscreen request failed:", error);
     }
   };
 
+  // =========================
+  // Blur / Tab Switching
+  // =========================
+
   useEffect(() => {
+    if (!isExamActive) {
+      return;
+    }
+
     const handleBlur = () => {
       addWarning("You left the exam window.");
     };
@@ -67,9 +109,17 @@ export default function useExamProtection({ maxWarnings = 3, onAutoSubmit }) {
 
       document.removeEventListener("visibilitychange", handleVisibility);
     };
-  }, [addWarning]);
+  }, [addWarning, isExamActive]);
+
+  // =========================
+  // Fullscreen
+  // =========================
 
   useEffect(() => {
+    if (!isExamActive) {
+      return;
+    }
+
     const handleFullscreenChange = () => {
       const fullscreen = !!document.fullscreenElement;
 
@@ -85,8 +135,17 @@ export default function useExamProtection({ maxWarnings = 3, onAutoSubmit }) {
     return () => {
       document.removeEventListener("fullscreenchange", handleFullscreenChange);
     };
-  }, [addWarning]);
+  }, [addWarning, isExamActive]);
+
+  // =========================
+  // Context Menu / Copy / Keys
+  // =========================
+
   useEffect(() => {
+    if (!isExamActive) {
+      return;
+    }
+
     const handleContextMenu = (event) => {
       event.preventDefault();
     };
@@ -109,7 +168,6 @@ export default function useExamProtection({ maxWarnings = 3, onAutoSubmit }) {
     const handleKeyDown = (event) => {
       const key = event.key.toLowerCase();
 
-      // F12
       if (event.key === "F12") {
         event.preventDefault();
 
@@ -118,7 +176,6 @@ export default function useExamProtection({ maxWarnings = 3, onAutoSubmit }) {
         return;
       }
 
-      // Ctrl + C
       if (event.ctrlKey && key === "c") {
         event.preventDefault();
 
@@ -127,7 +184,6 @@ export default function useExamProtection({ maxWarnings = 3, onAutoSubmit }) {
         return;
       }
 
-      // Ctrl + V
       if (event.ctrlKey && key === "v") {
         event.preventDefault();
 
@@ -136,7 +192,6 @@ export default function useExamProtection({ maxWarnings = 3, onAutoSubmit }) {
         return;
       }
 
-      // Ctrl + X
       if (event.ctrlKey && key === "x") {
         event.preventDefault();
 
@@ -145,7 +200,6 @@ export default function useExamProtection({ maxWarnings = 3, onAutoSubmit }) {
         return;
       }
 
-      // Ctrl + A
       if (event.ctrlKey && key === "a") {
         event.preventDefault();
 
@@ -154,7 +208,6 @@ export default function useExamProtection({ maxWarnings = 3, onAutoSubmit }) {
         return;
       }
 
-      // Ctrl + Shift + I
       if (event.ctrlKey && event.shiftKey && key === "i") {
         event.preventDefault();
 
@@ -163,7 +216,6 @@ export default function useExamProtection({ maxWarnings = 3, onAutoSubmit }) {
         return;
       }
 
-      // Ctrl + Shift + J
       if (event.ctrlKey && event.shiftKey && key === "j") {
         event.preventDefault();
 
@@ -172,7 +224,6 @@ export default function useExamProtection({ maxWarnings = 3, onAutoSubmit }) {
         return;
       }
 
-      // Ctrl + U
       if (event.ctrlKey && key === "u") {
         event.preventDefault();
 
@@ -203,7 +254,7 @@ export default function useExamProtection({ maxWarnings = 3, onAutoSubmit }) {
 
       document.removeEventListener("keydown", handleKeyDown);
     };
-  }, [addWarning]);
+  }, [addWarning, isExamActive]);
 
   return {
     warningCount,
@@ -217,5 +268,7 @@ export default function useExamProtection({ maxWarnings = 3, onAutoSubmit }) {
     violationReason,
 
     maxWarnings,
+
+    isFullscreen,
   };
 }
