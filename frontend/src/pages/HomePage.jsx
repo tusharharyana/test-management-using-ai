@@ -31,7 +31,7 @@ function HomePage() {
 
             <button
               className="primary-button"
-              onClick={() => navigate("/student/join")}
+              onClick={() => navigate("/student/system-check")}
             >
               Join Test
             </button>

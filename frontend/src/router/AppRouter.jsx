@@ -13,6 +13,7 @@ import StudentResultPage from "../pages/teacher/StudentResultPage";
 import TeacherLoginPage from "../pages/teacher/TeacherLoginPage";
 
 import ProtectedTeacherRoute from "../components/auth/ProtectedTeacherRoute";
+import SystemCheckPage from "../pages/student/SystemCheckPage";
 
 function AppRouter() {
   return (
@@ -27,6 +28,7 @@ function AppRouter() {
         {/* =========================
             PUBLIC STUDENT ROUTES
         ========================== */}
+        <Route path="/student/system-check" element={<SystemCheckPage />} />
 
         <Route path="/student/join" element={<JoinTestPage />} />
 
