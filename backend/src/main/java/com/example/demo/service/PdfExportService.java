@@ -124,7 +124,7 @@ public class PdfExportService {
 
                             Phrase footer =
                                     new Phrase(
-                                            "AI Coding Assessment Platform",
+                                            "CodeRanBhumi - AI Coding Assessment Platform",
                                             footerFont
                                     );
 
@@ -266,7 +266,7 @@ public class PdfExportService {
 
             Paragraph platform =
                     new Paragraph(
-                            "AI CODING ASSESSMENT",
+                            "CodeRanBhumi - AI Coding Assessment",
                             mainTitleFont
                     );
 

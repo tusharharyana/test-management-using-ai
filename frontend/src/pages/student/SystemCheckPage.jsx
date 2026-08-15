@@ -171,7 +171,7 @@ function SystemCheckPage() {
           <div className="system-check-brand-icon">{"</>"}</div>
 
           <div className="system-check-brand-text">
-            <strong>AI Coding Assessment</strong>
+            <strong>CodeRanBhumi - AI Coding Assessment</strong>
             <span>System Check</span>
           </div>
         </div>

@@ -169,7 +169,7 @@ function TeacherDashboard() {
           <div className="teacher-brand-icon">{"</>"}</div>
 
           <div>
-            <strong>AI Coding Assessment</strong>
+            <strong>CodeRanBhumi - AI Coding Assessment</strong>
             <span>Teacher Portal</span>
           </div>
         </div>

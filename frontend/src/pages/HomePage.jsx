@@ -9,7 +9,7 @@ function HomePage() {
         <div className="brand-badge">AI Powered Code Assessment</div>
 
         <h1>
-          Competitive Coding
+          CodeRanBhumi AI
           <span> Evaluation Platform</span>
         </h1>
 

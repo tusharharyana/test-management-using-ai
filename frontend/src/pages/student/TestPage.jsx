@@ -494,7 +494,7 @@ function TestPage() {
           <div className="test-brand-icon">{"</>"}</div>
 
           <div>
-            <strong>AI Coding Assessment</strong>
+            <strong>CodeRanBhumi - AI Coding Assessment</strong>
 
             <span>{attempt.studentName}</span>
           </div>
