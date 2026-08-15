@@ -4,19 +4,17 @@ import { useNavigate, useParams } from "react-router-dom";
 
 import { getTestResults } from "../../api/resultApi";
 import { exportTestResults } from "../../api/exportApi";
+import { deleteAttempt } from "../../api/attemptApi";
 
 function TestResultsPage() {
   const navigate = useNavigate();
 
   const { testId } = useParams();
-
   const [results, setResults] = useState([]);
-
   const [loading, setLoading] = useState(true);
-
   const [error, setError] = useState("");
-
   const [searchTerm, setSearchTerm] = useState("");
+  const [deletingAttemptId, setDeletingAttemptId] = useState(null);
 
   const loadResults = useCallback(async () => {
     setLoading(true);
@@ -96,6 +94,35 @@ function TestResultsPage() {
 
       default:
         return "result-status-default";
+    }
+  };
+
+  const handleDeleteAttempt = async (result) => {
+    const confirmed = window.confirm(
+      `Are you sure you want to delete the attempt of ${result.studentName} (${result.studentUid})?\n\nAfter deletion, this student will be able to attempt the test again.`,
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    try {
+      setDeletingAttemptId(result.attemptId);
+
+      await deleteAttempt(result.attemptId);
+
+      // Remove deleted attempt from current table
+      setResults((previousResults) =>
+        previousResults.filter((item) => item.attemptId !== result.attemptId),
+      );
+    } catch (error) {
+      console.error("Failed to delete attempt:", error);
+
+      alert(
+        error.response?.data?.message || "Failed to delete student attempt.",
+      );
+    } finally {
+      setDeletingAttemptId(null);
     }
   };
 
@@ -305,16 +332,28 @@ function TestResultsPage() {
                       <td>{result.maximumPossibleScore}</td>
 
                       <td>
-                        <button
-                          className="view-student-result-button"
-                          onClick={() =>
-                            navigate(
-                              `/teacher/tests/${testId}/results/${result.attemptId}`,
-                            )
-                          }
-                        >
-                          View Details
-                        </button>
+                        <div className="student-result-actions">
+                          <button
+                            className="view-student-result-button"
+                            onClick={() =>
+                              navigate(
+                                `/teacher/tests/${testId}/results/${result.attemptId}`,
+                              )
+                            }
+                          >
+                            View Details
+                          </button>
+
+                          <button
+                            className="delete-attempt-button"
+                            onClick={() => handleDeleteAttempt(result)}
+                            disabled={deletingAttemptId === result.attemptId}
+                          >
+                            {deletingAttemptId === result.attemptId
+                              ? "Deleting..."
+                              : "Delete Attempt"}
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))}

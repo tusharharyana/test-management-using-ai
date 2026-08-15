@@ -17,6 +17,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.exception.BadRequestException;
+import com.example.demo.repository.SubmissionRepository;
+import com.example.demo.repository.EvaluationRepository;
+import com.example.demo.entity.Submission;
 
 @Service
 public class TestAttemptService {
@@ -24,15 +27,22 @@ public class TestAttemptService {
     private final TestRepository testRepository;
 
     private final TestAttemptRepository testAttemptRepository;
+    private final SubmissionRepository submissionRepository;
+    private final EvaluationRepository evaluationRepository;
 
 
     public TestAttemptService(
-            TestRepository testRepository,
-            TestAttemptRepository testAttemptRepository
-    ) {
-        this.testRepository = testRepository;
-        this.testAttemptRepository = testAttemptRepository;
-    }
+                TestRepository testRepository,
+                TestAttemptRepository testAttemptRepository,
+                SubmissionRepository submissionRepository,
+                EvaluationRepository evaluationRepository
+        ) 
+        {
+                this.testRepository = testRepository;
+                this.testAttemptRepository = testAttemptRepository;
+                this.submissionRepository = submissionRepository;
+                this.evaluationRepository = evaluationRepository;
+        }
 
 
     @Transactional
@@ -255,7 +265,7 @@ private TestAttemptResponse mapToResponse(
             questions
          );
         }
-        @Transactional
+       @Transactional
         public void deleteAttempt(Long attemptId) {
 
         TestAttempt attempt = testAttemptRepository
@@ -266,6 +276,24 @@ private TestAttemptResponse mapToResponse(
                         )
                 );
 
+        // Get all submissions belonging to this attempt
+        List<Submission> submissions =
+                submissionRepository.findAllByTestAttemptId(attemptId);
+
+        // Delete evaluations first
+        for (Submission submission : submissions) {
+
+                evaluationRepository
+                        .findBySubmissionId(submission.getId())
+                        .ifPresent(evaluation ->
+                                evaluationRepository.delete(evaluation)
+                        );
+        }
+
+        // Delete submissions
+        submissionRepository.deleteAll(submissions);
+
+        // Finally delete the attempt
         testAttemptRepository.delete(attempt);
         }
 }

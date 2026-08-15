@@ -11,3 +11,9 @@ export const submitTestAttempt = async (attemptId) => {
 
   return response.data;
 };
+
+export const deleteAttempt = async (attemptId) => {
+  const response = await axiosInstance.delete(`/attempts/${attemptId}`);
+
+  return response.data;
+};

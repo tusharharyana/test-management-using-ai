@@ -20,4 +20,5 @@ public interface SubmissionRepository
     );
 
     List<Submission> findAllByTestAttemptId(Long attemptId);
+    void deleteByTestAttemptId(Long attemptId);
 }

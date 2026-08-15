@@ -3167,3 +3167,32 @@ button {
     padding-right: 16px;
   }
 }
+
+.student-result-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.delete-attempt-button {
+  padding: 8px 12px;
+  border: 1px solid #fecaca;
+  border-radius: 7px;
+  background: #fff;
+  color: #dc2626;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.delete-attempt-button:hover:not(:disabled) {
+  background: #fef2f2;
+  border-color: #fca5a5;
+}
+
+.delete-attempt-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
