@@ -57,12 +57,22 @@ public class TestAttemptService {
         }
 
 
-        // 3. Check if this student has already attempted the test
+        // 3. Validate Student UID
+        String studentUid = request.getStudentUid();
+
+        if (studentUid == null || !studentUid.matches("^[A-Za-z0-9]{10}$")) {
+        throw new BadRequestException(
+                "Invalid Student UID. Please enter your original university UID."
+        );
+        }
+
+
+        // 4. Check if this student has already attempted the test
         boolean alreadyAttempted =
                 testAttemptRepository
                         .existsByTestIdAndStudentUid(
                                 test.getId(),
-                                request.getStudentUid()
+                                studentUid
                         );
 
         if (alreadyAttempted) {
@@ -73,7 +83,7 @@ public class TestAttemptService {
         }
 
 
-        // 4. Create attempt
+        // 5. Create attempt
         LocalDateTime startedAt = LocalDateTime.now();
 
         LocalDateTime expiresAt =
@@ -95,12 +105,12 @@ public class TestAttemptService {
         attempt.setExpiresAt(expiresAt);
 
 
-        // 5. Save attempt
+        // 6. Save attempt
         TestAttempt savedAttempt =
                 testAttemptRepository.save(attempt);
 
 
-        // 6. Convert questions to response DTO
+        // 7. Convert questions to response DTO
         List<QuestionResponse> questions =
                 test.getQuestions()
                         .stream()
@@ -121,7 +131,7 @@ public class TestAttemptService {
                         .toList();
 
 
-        // 7. Return response
+        // 8. Return response
         return new TestAttemptResponse(
 
                 savedAttempt.getId(),
@@ -243,6 +253,19 @@ private TestAttemptResponse mapToResponse(
             attempt.getExpiresAt(),
 
             questions
-    );
-}
+         );
+        }
+        @Transactional
+        public void deleteAttempt(Long attemptId) {
+
+        TestAttempt attempt = testAttemptRepository
+                .findById(attemptId)
+                .orElseThrow(
+                        () -> new ResourceNotFoundException(
+                                "Test attempt not found with id: " + attemptId
+                        )
+                );
+
+        testAttemptRepository.delete(attempt);
+        }
 }

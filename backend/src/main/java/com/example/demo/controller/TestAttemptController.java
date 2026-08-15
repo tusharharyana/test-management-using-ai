@@ -37,12 +37,21 @@ public class TestAttemptController {
     }
 
     @PostMapping("/{attemptId}/submit")
-public ResponseEntity<TestAttemptResponse> submitTest(
-        @PathVariable Long attemptId
-) {
+        public ResponseEntity<TestAttemptResponse> submitTest(
+                @PathVariable Long attemptId
+        ) {
 
-    return ResponseEntity.ok(
-            testAttemptService.submitTest(attemptId)
-    );
-}
+        return ResponseEntity.ok(
+                testAttemptService.submitTest(attemptId)
+        );
+        }
+        @DeleteMapping("/{attemptId}")
+        public ResponseEntity<Void> deleteAttempt(
+                @PathVariable Long attemptId
+        ) {
+
+        testAttemptService.deleteAttempt(attemptId);
+
+        return ResponseEntity.noContent().build();
+        }
 }
