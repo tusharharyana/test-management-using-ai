@@ -18,6 +18,13 @@ import java.util.List;
 import com.example.demo.exception.BadRequestException;
 import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.dto.request.UpdateTestRequest;
+import com.example.demo.entity.Submission;
+import com.example.demo.entity.Evaluation;
+import com.example.demo.entity.TestAttempt;
+
+import com.example.demo.repository.TestAttemptRepository;
+import com.example.demo.repository.SubmissionRepository;
+import com.example.demo.repository.EvaluationRepository;
 
 @Service
 public class TestService {
@@ -30,11 +37,22 @@ public class TestService {
     private static final int ACCESS_CODE_LENGTH = 6;
 
     private final SecureRandom secureRandom = new SecureRandom();
+    private final TestAttemptRepository testAttemptRepository;
+    private final SubmissionRepository submissionRepository;
+    private final EvaluationRepository evaluationRepository;
 
 
-    public TestService(TestRepository testRepository) {
+    public TestService(
+        TestRepository testRepository,
+        TestAttemptRepository testAttemptRepository,
+        SubmissionRepository submissionRepository,
+        EvaluationRepository evaluationRepository
+        ) {
         this.testRepository = testRepository;
-    }
+        this.testAttemptRepository = testAttemptRepository;
+        this.submissionRepository = submissionRepository;
+        this.evaluationRepository = evaluationRepository;
+        }
 
 
     // =========================
@@ -305,5 +323,50 @@ public TestResponse updateTestTitle(
     Test savedTest = testRepository.save(test);
 
     return mapToResponse(savedTest);
+}
+@Transactional
+public void deleteTest(Long testId) {
+
+    Test test = testRepository
+            .findById(testId)
+            .orElseThrow(
+                    () -> new ResourceNotFoundException(
+                            "Test not found with id: " + testId
+                    )
+            );
+
+    // Get all attempts for this test
+    List<TestAttempt> attempts =
+            testAttemptRepository.findAllByTestId(testId);
+
+    // Delete evaluations → submissions → attempts
+    for (TestAttempt attempt : attempts) {
+
+        List<Submission> submissions =
+                submissionRepository.findAllByTestAttemptId(
+                        attempt.getId()
+                );
+
+        // Delete evaluations first
+        for (Submission submission : submissions) {
+
+            evaluationRepository
+                    .findBySubmissionId(submission.getId())
+                    .ifPresent(evaluation ->
+                            evaluationRepository.delete(evaluation)
+                    );
+        }
+
+        // Delete submissions
+        submissionRepository.deleteAll(submissions);
+
+        // Delete attempt
+        testAttemptRepository.delete(attempt);
+    }
+
+    // Delete test
+    // Questions are automatically deleted because
+    // Test.questions has cascade + orphanRemoval.
+    testRepository.delete(test);
 }
 }

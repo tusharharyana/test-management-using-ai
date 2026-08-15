@@ -6,6 +6,7 @@ import {
   completeTest,
   getAllTests,
   updateTestTitle,
+  deleteTest,
 } from "../../api/testApi";
 import { logoutTeacher } from "../../utils/teacherAuth";
 
@@ -18,6 +19,7 @@ function TeacherDashboard() {
   const [error, setError] = useState("");
   const [editingTest, setEditingTest] = useState(null);
   const [editTitle, setEditTitle] = useState("");
+  const [deletingTest, setDeletingTest] = useState(null);
 
   const loadTests = useCallback(async () => {
     setLoading(true);
@@ -107,6 +109,31 @@ function TeacherDashboard() {
     } finally {
       setActionLoading(null);
     }
+  };
+
+  const handleDeleteTest = async () => {
+    if (!deletingTest) {
+      return;
+    }
+
+    setActionLoading(`delete-${deletingTest.id}`);
+    setError("");
+
+    try {
+      await deleteTest(deletingTest.id);
+
+      setDeletingTest(null);
+
+      await loadTests();
+    } catch (error) {
+      setError(error.response?.data?.message || "Unable to delete test.");
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  const handleCancelDelete = () => {
+    setDeletingTest(null);
   };
 
   const handleCancelEdit = () => {
@@ -288,6 +315,14 @@ function TeacherDashboard() {
                     View Results
                   </button>
                 </div>
+                <div className="test-card-danger-actions">
+                  <button
+                    className="delete-test-button"
+                    onClick={() => setDeletingTest(test)}
+                  >
+                    🗑 Delete Test
+                  </button>
+                </div>
               </article>
             ))}
           </div>
@@ -357,6 +392,49 @@ function TeacherDashboard() {
                 {actionLoading === `edit-${editingTest.id}`
                   ? "Saving..."
                   : "Save Changes"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {deletingTest && (
+        <div className="delete-test-modal-overlay">
+          <div className="delete-test-modal">
+            <div className="delete-test-icon">!</div>
+
+            <div className="delete-test-content">
+              <h2>Delete Test?</h2>
+
+              <p>
+                Are you sure you want to delete{" "}
+                <strong>"{deletingTest.title}"</strong>?
+              </p>
+
+              <p className="delete-test-warning">
+                This will permanently delete the test, questions, student
+                attempts, submissions, and evaluations. This action cannot be
+                undone.
+              </p>
+            </div>
+
+            <div className="delete-test-modal-actions">
+              <button
+                className="delete-test-cancel-button"
+                onClick={handleCancelDelete}
+                disabled={actionLoading === `delete-${deletingTest.id}`}
+              >
+                Cancel
+              </button>
+
+              <button
+                className="delete-test-confirm-button"
+                onClick={handleDeleteTest}
+                disabled={actionLoading === `delete-${deletingTest.id}`}
+              >
+                {actionLoading === `delete-${deletingTest.id}`
+                  ? "Deleting..."
+                  : "Delete Test"}
               </button>
             </div>
           </div>

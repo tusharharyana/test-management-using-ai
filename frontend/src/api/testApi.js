@@ -37,3 +37,7 @@ export const updateTestTitle = async (testId, title) => {
 
   return response.data;
 };
+
+export const deleteTest = async (testId) => {
+  await axiosInstance.delete(`/tests/${testId}`);
+};

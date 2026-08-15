@@ -116,4 +116,14 @@ public ResponseEntity<TestResponse> updateTestTitle(
             testService.updateTestTitle(id, request)
     );
 }
+
+@DeleteMapping("/{id}")
+public ResponseEntity<Void> deleteTest(
+        @PathVariable Long id
+) {
+
+    testService.deleteTest(id);
+
+    return ResponseEntity.noContent().build();
+}
 }
