@@ -235,96 +235,98 @@ function TeacherDashboard() {
           </div>
         ) : (
           <div className="test-cards-grid">
-            {tests.map((test) => (
-              <article className="teacher-test-card" key={test.id}>
-                <div className="test-card-top">
-                  <span
-                    className={`test-status-badge ${getStatusClass(
-                      test.status,
-                    )}`}
-                  >
-                    {test.status}
-                  </span>
-
-                  <span className="test-card-id">#{test.id}</span>
-                </div>
-
-                <h2>{test.title}</h2>
-
-                <p className="test-card-description">
-                  {test.description || "No description provided."}
-                </p>
-
-                <div className="test-card-stats">
-                  <div>
-                    <span>Duration</span>
-                    <strong>{test.durationMinutes} min</strong>
-                  </div>
-
-                  <div>
-                    <span>Questions</span>
-                    <strong>{test.questions?.length || 0}</strong>
-                  </div>
-
-                  <div>
-                    <span>Access Code</span>
-                    <strong className="access-code-value">
-                      {test.accessCode || "—"}
-                    </strong>
-                  </div>
-                </div>
-
-                <div className="test-card-actions">
-                  {test.status === "DRAFT" && (
-                    <button
-                      className="activate-test-button"
-                      disabled={actionLoading === `activate-${test.id}`}
-                      onClick={() => handleActivate(test.id)}
+            {[...tests]
+              .sort((a, b) => b.id - a.id)
+              .map((test) => (
+                <article className="teacher-test-card" key={test.id}>
+                  <div className="test-card-top">
+                    <span
+                      className={`test-status-badge ${getStatusClass(
+                        test.status,
+                      )}`}
                     >
-                      {actionLoading === `activate-${test.id}`
-                        ? "Activating..."
-                        : "Activate"}
-                    </button>
-                  )}
+                      {test.status}
+                    </span>
 
-                  {test.status === "ACTIVE" && (
+                    <span className="test-card-id">#{test.id}</span>
+                  </div>
+
+                  <h2>{test.title}</h2>
+
+                  <p className="test-card-description">
+                    {test.description || "No description provided."}
+                  </p>
+
+                  <div className="test-card-stats">
+                    <div>
+                      <span>Duration</span>
+                      <strong>{test.durationMinutes} min</strong>
+                    </div>
+
+                    <div>
+                      <span>Questions</span>
+                      <strong>{test.questions?.length || 0}</strong>
+                    </div>
+
+                    <div>
+                      <span>Access Code</span>
+                      <strong className="access-code-value">
+                        {test.accessCode || "—"}
+                      </strong>
+                    </div>
+                  </div>
+
+                  <div className="test-card-actions">
+                    {test.status === "DRAFT" && (
+                      <button
+                        className="activate-test-button"
+                        disabled={actionLoading === `activate-${test.id}`}
+                        onClick={() => handleActivate(test.id)}
+                      >
+                        {actionLoading === `activate-${test.id}`
+                          ? "Activating..."
+                          : "Activate"}
+                      </button>
+                    )}
+
+                    {test.status === "ACTIVE" && (
+                      <button
+                        className="complete-test-button"
+                        disabled={actionLoading === `complete-${test.id}`}
+                        onClick={() => handleComplete(test.id)}
+                      >
+                        {actionLoading === `complete-${test.id}`
+                          ? "Completing..."
+                          : "Complete Test"}
+                      </button>
+                    )}
+
                     <button
-                      className="complete-test-button"
-                      disabled={actionLoading === `complete-${test.id}`}
-                      onClick={() => handleComplete(test.id)}
+                      className="edit-test-button"
+                      onClick={() => handleEditTitle(test)}
                     >
-                      {actionLoading === `complete-${test.id}`
-                        ? "Completing..."
-                        : "Complete Test"}
+                      Edit Title
                     </button>
-                  )}
 
-                  <button
-                    className="edit-test-button"
-                    onClick={() => handleEditTitle(test)}
-                  >
-                    Edit Title
-                  </button>
-
-                  <button
-                    className="view-results-button"
-                    onClick={() =>
-                      navigate(`/teacher/tests/${test.id}/results`)
-                    }
-                  >
-                    View Results
-                  </button>
-                </div>
-                <div className="test-card-danger-actions">
-                  <button
-                    className="delete-test-button"
-                    onClick={() => setDeletingTest(test)}
-                  >
-                    🗑 Delete Test
-                  </button>
-                </div>
-              </article>
-            ))}
+                    <button
+                      className="view-results-button"
+                      onClick={() =>
+                        navigate(`/teacher/tests/${test.id}/results`)
+                      }
+                    >
+                      View Results
+                    </button>
+                  </div>
+                  <div className="test-card-danger-actions">
+                    <button
+                      className="delete-test-button"
+                      onClick={() => setDeletingTest(test)}
+                    >
+                      🗑 Delete Test
+                    </button>
+                  </div>
+                </article>
+              ))}
           </div>
         )}
       </main>
