@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { downloadMyTest } from "../../api/exportApi";
 
@@ -6,6 +6,12 @@ function SubmissionSuccessPage() {
   const navigate = useNavigate();
   const [downloading, setDownloading] = useState(false);
   const storedResult = sessionStorage.getItem("lastSubmissionResult");
+
+  useEffect(() => {
+    if (document.fullscreenElement) {
+      document.exitFullscreen().catch(() => {});
+    }
+  }, []);
 
   let result = null;
 
@@ -41,12 +47,10 @@ function SubmissionSuccessPage() {
       link.remove();
 
       window.URL.revokeObjectURL(url);
-
     } catch (error) {
       console.error("Failed to download test:", error);
 
       alert("Unable to download your test. Please try again.");
-
     } finally {
       setDownloading(false);
     }
@@ -90,15 +94,12 @@ function SubmissionSuccessPage() {
         )}
 
         <div className="success-action-buttons">
-
           <button
             className="download-test-button"
             onClick={handleDownloadTest}
             disabled={downloading}
           >
-            {downloading
-              ? "Preparing PDF..."
-              : "Download My Test"}
+            {downloading ? "Preparing PDF..." : "Download My Test"}
           </button>
 
           <button
@@ -110,7 +111,6 @@ function SubmissionSuccessPage() {
           >
             Return to Home
           </button>
-
         </div>
       </div>
     </div>
