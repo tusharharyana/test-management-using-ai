@@ -251,23 +251,25 @@ public SubmissionResultResponse getSubmissionResult(
     }
 
 
-    return new SubmissionResultResponse(
+   return new SubmissionResultResponse(
 
-            submission.getId(),
+        submission.getId(),
 
-            submission.getTestAttempt().getId(),
+        submission.getTestAttempt().getId(),
 
-            submission.getQuestion().getId(),
+        submission.getQuestion().getId(),
 
-            submission.getQuestion().getTitle(),
+        submission.getQuestion().getTitle(),
 
-            submission.getLanguage(),
+        submission.getLanguage(),
 
-            submission.getStatus(),
+        submission.getStatus(),
 
-            submission.getSubmittedAt(),
+        submission.getSubmittedAt(),
 
-            evaluationResponse
-    );
+        submission.getSourceCode(),
+
+        evaluationResponse
+);
 }
 }

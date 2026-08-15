@@ -23,6 +23,7 @@ function StudentResultPage() {
   });
 
   const [savingOverride, setSavingOverride] = useState(false);
+  const [copiedCodeId, setCopiedCodeId] = useState(null);
 
   const loadStudentResult = useCallback(async () => {
     setLoading(true);
@@ -129,7 +130,19 @@ function StudentResultPage() {
       </div>
     );
   }
+  const handleCopyCode = async (submission) => {
+    try {
+      await navigator.clipboard.writeText(submission.sourceCode || "");
 
+      setCopiedCodeId(submission.submissionId);
+
+      setTimeout(() => {
+        setCopiedCodeId(null);
+      }, 1500);
+    } catch (error) {
+      console.error("Failed to copy code:", error);
+    }
+  };
   return (
     <div className="teacher-page">
       <header className="teacher-navbar">
@@ -250,6 +263,38 @@ function StudentResultPage() {
                       <span>
                         Status: <strong>{submission.status}</strong>
                       </span>
+                    </div>
+                    <div className="submitted-code-section">
+                      <div className="submitted-code-header">
+                        <div>
+                          <span className="submitted-code-label">
+                            Submitted Code
+                          </span>
+
+                          <span className="submitted-code-language">
+                            {submission.language}
+                          </span>
+                        </div>
+
+                        <button
+                          className={`copy-code-button ${
+                            copiedCodeId === submission.submissionId
+                              ? "code-copied"
+                              : ""
+                          }`}
+                          onClick={() => handleCopyCode(submission)}
+                        >
+                          {copiedCodeId === submission.submissionId
+                            ? "✓ Copied"
+                            : "Copy Code"}
+                        </button>
+                      </div>
+
+                      <pre className="submitted-code">
+                        <code>
+                          {submission.sourceCode || "No source code available."}
+                        </code>
+                      </pre>
                     </div>
 
                     {!evaluation ? (

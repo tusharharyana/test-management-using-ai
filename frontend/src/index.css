@@ -3638,3 +3638,113 @@ button {
     width: 100%;
   }
 }
+
+/* =========================================
+   SUBMITTED CODE
+========================================= */
+
+.submitted-code-section {
+  margin: 20px 22px;
+  border: 1px solid #dbe3ef;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #0f172a;
+}
+
+.submitted-code-header {
+  min-height: 48px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 0 14px;
+
+  background: #f8fafc;
+
+  border-bottom: 1px solid #dbe3ef;
+}
+
+.submitted-code-header > div {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.submitted-code-label {
+  color: #334155;
+
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.submitted-code-language {
+  padding: 3px 7px;
+
+  border-radius: 5px;
+
+  background: #e2e8f0;
+
+  color: #475569;
+
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.copy-code-button {
+  padding: 6px 11px;
+
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+
+  background: #ffffff;
+  color: #334155;
+
+  font-size: 11px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: all 0.2s ease;
+}
+
+.copy-code-button:hover {
+  background: #f1f5f9;
+  transform: translateY(-1px);
+}
+
+.copy-code-button:active {
+  transform: scale(0.96);
+}
+
+.copy-code-button.code-copied {
+  background: #dcfce7;
+  border-color: #86efac;
+  color: #15803d;
+}
+
+.submitted-code {
+  margin: 0;
+
+  padding: 18px;
+
+  max-height: 420px;
+
+  overflow: auto;
+
+  color: #e2e8f0;
+
+  font-family: "Fira Code", "Cascadia Code", Consolas, monospace;
+
+  font-size: 13px;
+
+  line-height: 1.6;
+
+  white-space: pre;
+
+  tab-size: 4;
+}
+
+.submitted-code code {
+  font-family: inherit;
+}

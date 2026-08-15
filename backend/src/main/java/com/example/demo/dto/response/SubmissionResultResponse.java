@@ -21,6 +21,8 @@ public class SubmissionResultResponse {
 
     private LocalDateTime submittedAt;
 
+    private String sourceCode;
+
     private EvaluationSummaryResponse evaluation;
 
 
@@ -36,6 +38,7 @@ public class SubmissionResultResponse {
             ProgrammingLanguage language,
             SubmissionStatus status,
             LocalDateTime submittedAt,
+            String sourceCode,
             EvaluationSummaryResponse evaluation
     ) {
         this.submissionId = submissionId;
@@ -45,6 +48,7 @@ public class SubmissionResultResponse {
         this.language = language;
         this.status = status;
         this.submittedAt = submittedAt;
+        this.sourceCode = sourceCode;
         this.evaluation = evaluation;
     }
 
@@ -75,6 +79,10 @@ public class SubmissionResultResponse {
 
     public LocalDateTime getSubmittedAt() {
         return submittedAt;
+    }
+
+    public String getSourceCode() {
+        return sourceCode;
     }
 
     public EvaluationSummaryResponse getEvaluation() {
