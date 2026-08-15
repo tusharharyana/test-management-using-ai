@@ -10,6 +10,7 @@ import { createSubmission } from "../../api/submissionApi";
 import { submitTestAttempt } from "../../api/attemptApi";
 import useExamProtection from "../../hooks/useExamProtection";
 import ExamViolationModal from "../../components/exam/ExamViolationModal";
+import { runCode } from "../../api/codeExecutionApi";
 
 const DEFAULT_CODE = {
   CPP: `#include <bits/stdc++.h>
@@ -83,6 +84,8 @@ function TestPage() {
   const [answers, setAnswers] = useState({});
 
   const [submitting, setSubmitting] = useState(false);
+  const [runningCode, setRunningCode] = useState(false);
+  const [runResult, setRunResult] = useState(null);
   const [examEnded, setExamEnded] = useState(false);
   const submittingRef = useRef(false);
   const examEndedRef = useRef(false);
@@ -277,6 +280,45 @@ function TestPage() {
     });
   };
 
+  const handleRunCode = async () => {
+    if (!currentQuestionKey || !currentQuestion) {
+      return;
+    }
+
+    if (!currentAnswer.code || !currentAnswer.code.trim()) {
+      setError("Please write some code before running.");
+      return;
+    }
+
+    if (!isOnline) {
+      setError("Internet connection is required to run code.");
+      return;
+    }
+
+    try {
+      setRunningCode(true);
+      setRunResult(null);
+      setError("");
+
+      const result = await runCode({
+        questionId: Number(currentQuestion.id),
+        language: language,
+        sourceCode: currentAnswer.code,
+      });
+
+      setRunResult(result);
+    } catch (error) {
+      console.error("Code execution failed:", error);
+
+      setError(
+        error.response?.data?.message ||
+          "Unable to run code. Please try again.",
+      );
+    } finally {
+      setRunningCode(false);
+    }
+  };
+
   /*
    * Change question.
    */
@@ -284,6 +326,8 @@ function TestPage() {
   const goToQuestion = (index) => {
     if (index >= 0 && index < questions.length) {
       setCurrentQuestionIndex(index);
+      setRunResult(null);
+      setError("");
     }
   };
 
@@ -541,14 +585,81 @@ function TestPage() {
               </button>
             </div>
 
-            <button
-              className="final-submit-button"
-              disabled={submitting || !isOnline}
-              onClick={() => setShowSubmitConfirmation(true)}
-            >
-              {submitting ? "Submitting..." : "Submit Test"}
-            </button>
+            <div className="coding-actions">
+              <button
+                className="run-code-button"
+                disabled={runningCode || submitting || !isOnline}
+                onClick={handleRunCode}
+              >
+                {runningCode ? "Running..." : "▶ Run Code"}
+              </button>
+
+              <button
+                className="final-submit-button"
+                disabled={submitting || !isOnline}
+                onClick={() => setShowSubmitConfirmation(true)}
+              >
+                {submitting ? "Submitting..." : "Submit Test"}
+              </button>
+            </div>
           </div>
+
+          {runResult && (
+            <div className="run-result-panel">
+              <div className="run-result-header">
+                <strong>Execution Result</strong>
+
+                <span
+                  className={
+                    runResult.status === "ALL_TEST_CASES_PASSED"
+                      ? "run-status success"
+                      : "run-status failed"
+                  }
+                >
+                  {runResult.status}
+                </span>
+              </div>
+
+              <div className="run-summary">
+                <span>
+                  Passed: <strong>{runResult.passedTestCases}</strong>
+                </span>
+
+                <span>
+                  Failed: <strong>{runResult.failedTestCases}</strong>
+                </span>
+
+                <span>
+                  Total: <strong>{runResult.totalTestCases}</strong>
+                </span>
+              </div>
+
+              {runResult.compileOutput && (
+                <div className="compile-error-box">
+                  <strong>Compilation Error</strong>
+
+                  <pre>{runResult.compileOutput}</pre>
+                </div>
+              )}
+
+              {runResult.results?.length > 0 && (
+                <div className="test-case-results">
+                  {runResult.results.map((testCase) => (
+                    <div
+                      key={testCase.testCaseOrder}
+                      className="test-case-result"
+                    >
+                      <span>{testCase.status === "PASSED" ? "✓" : "✗"}</span>
+
+                      <strong>Test Case {testCase.testCaseOrder}</strong>
+
+                      <span>{testCase.status}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
 
           {error && <div className="test-error-message">{error}</div>}
         </section>
