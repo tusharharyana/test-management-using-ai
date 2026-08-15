@@ -25,6 +25,8 @@ import com.example.demo.entity.TestAttempt;
 import com.example.demo.repository.TestAttemptRepository;
 import com.example.demo.repository.SubmissionRepository;
 import com.example.demo.repository.EvaluationRepository;
+import com.example.demo.dto.request.TestCaseRequest;
+import com.example.demo.entity.TestCase;
 
 @Service
 public class TestService {
@@ -97,6 +99,26 @@ public class TestService {
                 question.setQuestionOrder(
                         questionRequest.getQuestionOrder()
                 );
+
+                for (TestCaseRequest testCaseRequest
+                        : questionRequest.getTestCases()) {
+
+                TestCase testCase = new TestCase();
+
+                testCase.setInput(
+                        testCaseRequest.getInput()
+                );
+
+                testCase.setExpectedOutput(
+                        testCaseRequest.getExpectedOutput()
+                );
+
+                testCase.setTestCaseOrder(
+                        testCaseRequest.getTestCaseOrder()
+                );
+
+                question.addTestCase(testCase);
+                }
 
                 test.addQuestion(question);
             }

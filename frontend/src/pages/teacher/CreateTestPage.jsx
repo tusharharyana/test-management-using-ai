@@ -9,6 +9,14 @@ const createEmptyQuestion = () => ({
   examples: "",
   maxMarks: 30,
   questionOrder: 1,
+
+  testCases: [
+    {
+      input: "",
+      expectedOutput: "",
+      testCaseOrder: 1,
+    },
+  ],
 });
 
 function CreateTestPage() {
@@ -102,11 +110,17 @@ function CreateTestPage() {
         durationMinutes: Number(formData.durationMinutes),
 
         questions: formData.questions.map((question, index) => ({
-          ...question,
-
+          title: question.title,
+          problemStatement: question.problemStatement,
+          examples: question.examples,
           maxMarks: Number(question.maxMarks),
-
           questionOrder: index + 1,
+
+          testCases: question.testCases.map((testCase, testCaseIndex) => ({
+            input: testCase.input,
+            expectedOutput: testCase.expectedOutput,
+            testCaseOrder: testCaseIndex + 1,
+          })),
         })),
       };
 
@@ -130,6 +144,90 @@ function CreateTestPage() {
     } finally {
       setSubmitting(false);
     }
+  };
+
+  const handleTestCaseChange = (questionIndex, testCaseIndex, field, value) => {
+    setFormData((previous) => {
+      const updatedQuestions = [...previous.questions];
+
+      const updatedTestCases = [...updatedQuestions[questionIndex].testCases];
+
+      updatedTestCases[testCaseIndex] = {
+        ...updatedTestCases[testCaseIndex],
+        [field]: value,
+      };
+
+      updatedQuestions[questionIndex] = {
+        ...updatedQuestions[questionIndex],
+        testCases: updatedTestCases,
+      };
+
+      return {
+        ...previous,
+        questions: updatedQuestions,
+      };
+    });
+  };
+
+  const addTestCase = (questionIndex) => {
+    setFormData((previous) => {
+      const updatedQuestions = [...previous.questions];
+
+      const question = updatedQuestions[questionIndex];
+
+      if (question.testCases.length >= 10) {
+        return previous;
+      }
+
+      updatedQuestions[questionIndex] = {
+        ...question,
+
+        testCases: [
+          ...question.testCases,
+
+          {
+            input: "",
+            expectedOutput: "",
+            testCaseOrder: question.testCases.length + 1,
+          },
+        ],
+      };
+
+      return {
+        ...previous,
+        questions: updatedQuestions,
+      };
+    });
+  };
+
+  const removeTestCase = (questionIndex, testCaseIndex) => {
+    setFormData((previous) => {
+      const updatedQuestions = [...previous.questions];
+
+      const question = updatedQuestions[questionIndex];
+
+      // At least one test case must remain
+      if (question.testCases.length === 1) {
+        return previous;
+      }
+
+      const updatedTestCases = question.testCases
+        .filter((_, index) => index !== testCaseIndex)
+        .map((testCase, index) => ({
+          ...testCase,
+          testCaseOrder: index + 1,
+        }));
+
+      updatedQuestions[questionIndex] = {
+        ...question,
+        testCases: updatedTestCases,
+      };
+
+      return {
+        ...previous,
+        questions: updatedQuestions,
+      };
+    });
   };
 
   return (
@@ -343,6 +441,99 @@ Output:
                         required
                       />
                     </div>
+                  </div>
+                  <div className="test-cases-section">
+                    <div className="test-cases-header">
+                      <div>
+                        <h3>Test Cases</h3>
+
+                        <p>
+                          Add input and expected output used to verify student
+                          code.
+                        </p>
+                      </div>
+
+                      <span className="test-case-count">
+                        {question.testCases.length} / 10
+                      </span>
+                    </div>
+
+                    <div className="test-cases-list">
+                      {question.testCases.map((testCase, testCaseIndex) => (
+                        <div className="test-case-card" key={testCaseIndex}>
+                          <div className="test-case-card-header">
+                            <strong>Test Case {testCaseIndex + 1}</strong>
+
+                            {question.testCases.length > 1 && (
+                              <button
+                                type="button"
+                                className="remove-test-case-button"
+                                onClick={() =>
+                                  removeTestCase(index, testCaseIndex)
+                                }
+                              >
+                                Remove
+                              </button>
+                            )}
+                          </div>
+
+                          <div className="test-case-grid">
+                            <div className="teacher-form-group">
+                              <label>Input</label>
+
+                              <textarea
+                                rows="5"
+                                value={testCase.input}
+                                onChange={(event) =>
+                                  handleTestCaseChange(
+                                    index,
+                                    testCaseIndex,
+                                    "input",
+                                    event.target.value,
+                                  )
+                                }
+                                placeholder={`Example:
+
+5
+1 2 3 4 5`}
+                              />
+                            </div>
+
+                            <div className="teacher-form-group">
+                              <label>Expected Output</label>
+
+                              <textarea
+                                rows="5"
+                                value={testCase.expectedOutput}
+                                onChange={(event) =>
+                                  handleTestCaseChange(
+                                    index,
+                                    testCaseIndex,
+                                    "expectedOutput",
+                                    event.target.value,
+                                  )
+                                }
+                                placeholder={`Example:
+
+15`}
+                                required
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    <button
+                      type="button"
+                      className="add-test-case-button"
+                      onClick={() => addTestCase(index)}
+                      disabled={question.testCases.length >= 10}
+                    >
+                      {question.testCases.length >= 10
+                        ? "Maximum 10 Test Cases"
+                        : "+ Add Test Case"}
+                    </button>
                   </div>
                 </div>
               ))}
