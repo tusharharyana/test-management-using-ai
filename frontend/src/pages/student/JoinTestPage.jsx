@@ -19,9 +19,11 @@ function JoinTestPage() {
   const handleChange = (event) => {
     const { name, value } = event.target;
 
+    const updatedValue = value.toUpperCase();
+
     setFormData((previous) => ({
       ...previous,
-      [name]: value,
+      [name]: updatedValue,
     }));
   };
 
