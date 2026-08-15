@@ -81,6 +81,32 @@ export default function useExamProtection({
     }
   };
 
+  useEffect(() => {
+    const fullscreenCheckInterval = setInterval(async () => {
+      if (document.fullscreenElement) {
+        setIsFullscreen(true);
+        return;
+      }
+
+      // Fullscreen is not active
+      setIsFullscreen(false);
+
+      // Try to restore fullscreen
+      try {
+        if (document.fullscreenEnabled) {
+          await document.documentElement.requestFullscreen();
+        }
+      } catch (error) {
+        // Browser may reject automatic fullscreen
+        console.log("Could not restore fullscreen:", error);
+      }
+    }, 5000);
+
+    return () => {
+      clearInterval(fullscreenCheckInterval);
+    };
+  }, []);
+
   // =========================
   // Blur / Tab Switching
   // =========================
