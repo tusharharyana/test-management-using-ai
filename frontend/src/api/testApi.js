@@ -29,3 +29,11 @@ export const completeTest = async (testId) => {
 
   return response.data;
 };
+
+export const updateTestTitle = async (testId, title) => {
+  const response = await axiosInstance.patch(`/tests/${testId}/title`, {
+    title,
+  });
+
+  return response.data;
+};

@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import com.example.demo.dto.request.UpdateTestRequest;
 
 @RestController
 @RequestMapping("/api/tests")
@@ -103,6 +104,16 @@ public ResponseEntity<TestResponse> completeTest(
 
     return ResponseEntity.ok(
             testService.completeTest(id)
+    );
+}
+@PatchMapping("/{id}/title")
+public ResponseEntity<TestResponse> updateTestTitle(
+        @PathVariable Long id,
+        @RequestBody UpdateTestRequest request
+) {
+
+    return ResponseEntity.ok(
+            testService.updateTestTitle(id, request)
     );
 }
 }

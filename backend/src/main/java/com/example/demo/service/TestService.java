@@ -17,6 +17,7 @@ import java.util.List;
 
 import com.example.demo.exception.BadRequestException;
 import com.example.demo.exception.ResourceNotFoundException;
+import com.example.demo.dto.request.UpdateTestRequest;
 
 @Service
 public class TestService {
@@ -274,6 +275,34 @@ public TestResponse completeTest(Long testId) {
     Test savedTest =
             testRepository.save(test);
 
+
+    return mapToResponse(savedTest);
+}
+@Transactional
+public TestResponse updateTestTitle(
+        Long testId,
+        UpdateTestRequest request
+) {
+
+    Test test = testRepository
+            .findById(testId)
+            .orElseThrow(
+                    () -> new ResourceNotFoundException(
+                            "Test not found with id: " + testId
+                    )
+            );
+
+    if (request.getTitle() == null ||
+            request.getTitle().trim().isEmpty()) {
+
+        throw new BadRequestException(
+                "Test title cannot be empty"
+        );
+    }
+
+    test.setTitle(request.getTitle().trim());
+
+    Test savedTest = testRepository.save(test);
 
     return mapToResponse(savedTest);
 }

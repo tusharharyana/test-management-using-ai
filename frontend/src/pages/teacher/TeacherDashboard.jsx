@@ -1,7 +1,12 @@
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { activateTest, completeTest, getAllTests } from "../../api/testApi";
+import {
+  activateTest,
+  completeTest,
+  getAllTests,
+  updateTestTitle,
+} from "../../api/testApi";
 import { logoutTeacher } from "../../utils/teacherAuth";
 
 function TeacherDashboard() {
@@ -11,6 +16,8 @@ function TeacherDashboard() {
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(null);
   const [error, setError] = useState("");
+  const [editingTest, setEditingTest] = useState(null);
+  const [editTitle, setEditTitle] = useState("");
 
   const loadTests = useCallback(async () => {
     setLoading(true);
@@ -69,6 +76,42 @@ function TeacherDashboard() {
     } finally {
       setActionLoading(null);
     }
+  };
+
+  const handleEditTitle = (test) => {
+    setEditingTest(test);
+    setEditTitle(test.title || "");
+    setError("");
+  };
+
+  const handleSaveTitle = async () => {
+    const title = editTitle.trim();
+
+    if (!title) {
+      setError("Test title cannot be empty.");
+      return;
+    }
+
+    setActionLoading(`edit-${editingTest.id}`);
+    setError("");
+
+    try {
+      await updateTestTitle(editingTest.id, title);
+
+      setEditingTest(null);
+      setEditTitle("");
+
+      await loadTests();
+    } catch (error) {
+      setError(error.response?.data?.message || "Unable to update test title.");
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setEditingTest(null);
+    setEditTitle("");
   };
 
   const getStatusClass = (status) => {
@@ -230,6 +273,13 @@ function TeacherDashboard() {
                   )}
 
                   <button
+                    className="edit-test-button"
+                    onClick={() => handleEditTitle(test)}
+                  >
+                    Edit Title
+                  </button>
+
+                  <button
                     className="view-results-button"
                     onClick={() =>
                       navigate(`/teacher/tests/${test.id}/results`)
@@ -243,6 +293,75 @@ function TeacherDashboard() {
           </div>
         )}
       </main>
+      {editingTest && (
+        <div className="edit-test-modal-overlay">
+          <div className="edit-test-modal">
+            <div className="edit-test-modal-header">
+              <div>
+                <span>Edit Test</span>
+                <h2>Update Test Title</h2>
+              </div>
+
+              <button
+                className="edit-test-modal-close"
+                onClick={handleCancelEdit}
+              >
+                ×
+              </button>
+            </div>
+
+            <div className="edit-test-modal-body">
+              <label htmlFor="editTestTitle">Test Title</label>
+
+              <input
+                id="editTestTitle"
+                type="text"
+                value={editTitle}
+                onChange={(event) => setEditTitle(event.target.value)}
+                placeholder="Enter test title"
+                autoFocus
+                onKeyDown={(event) => {
+                  if (event.key === "Enter") {
+                    handleSaveTitle();
+                  }
+
+                  if (event.key === "Escape") {
+                    handleCancelEdit();
+                  }
+                }}
+              />
+
+              <p>
+                Only the test title will be changed. Questions, access code,
+                duration, and test status will remain unchanged.
+              </p>
+            </div>
+
+            <div className="edit-test-modal-actions">
+              <button
+                className="edit-test-cancel-button"
+                onClick={handleCancelEdit}
+                disabled={actionLoading === `edit-${editingTest.id}`}
+              >
+                Cancel
+              </button>
+
+              <button
+                className="edit-test-save-button"
+                onClick={handleSaveTitle}
+                disabled={
+                  actionLoading === `edit-${editingTest.id}` ||
+                  !editTitle.trim()
+                }
+              >
+                {actionLoading === `edit-${editingTest.id}`
+                  ? "Saving..."
+                  : "Save Changes"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
