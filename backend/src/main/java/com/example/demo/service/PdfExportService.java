@@ -14,19 +14,24 @@ import org.springframework.stereotype.Service;
 import java.io.ByteArrayOutputStream;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import com.example.demo.entity.Evaluation;
+import com.example.demo.repository.EvaluationRepository;
 
 @Service
 public class PdfExportService {
 
     private final TestAttemptRepository testAttemptRepository;
     private final SubmissionRepository submissionRepository;
+    private final EvaluationRepository evaluationRepository;
 
     public PdfExportService(
             TestAttemptRepository testAttemptRepository,
-            SubmissionRepository submissionRepository
+            SubmissionRepository submissionRepository,
+            EvaluationRepository evaluationRepository
     ) {
         this.testAttemptRepository = testAttemptRepository;
         this.submissionRepository = submissionRepository;
+        this.evaluationRepository = evaluationRepository;
     }
 
 
@@ -72,11 +77,50 @@ public class PdfExportService {
                                             "Test attempt not found"
                                     )
                             );
+                boolean showAiScore =attempt.getTest().isShowAiScoreInPdf();
+                boolean showAiFeedback = attempt.getTest().isShowAiFeedbackInPdf();
 
 
             List<Submission> submissions =
                     submissionRepository
                             .findAllByTestAttemptId(attemptId);
+                            int totalAiScore = 0;
+
+                int totalMaxMarks = 0;
+
+                if (showAiScore) {
+
+                for (Question question :
+                        attempt.getTest().getQuestions()) {
+
+                        totalMaxMarks += question.getMaxMarks();
+
+                        Submission submission =
+                                submissions.stream()
+                                        .filter(s ->
+                                                s.getQuestion()
+                                                        .getId()
+                                                        .equals(question.getId())
+                                        )
+                                        .findFirst()
+                                        .orElse(null);
+
+                        if (submission != null) {
+
+                        Evaluation evaluation =
+                                evaluationRepository
+                                        .findBySubmissionId(
+                                                submission.getId()
+                                        )
+                                        .orElse(null);
+
+                        if (evaluation != null) {
+                                totalAiScore +=
+                                        evaluation.getTotalScore();
+                        }
+                        }
+                }
+                }
 
 
             ByteArrayOutputStream outputStream =
@@ -380,6 +424,51 @@ public class PdfExportService {
 
 
             document.add(studentTable);
+            if (showAiScore) {
+
+                document.add(
+                        new Paragraph(" ")
+                );
+
+                addSectionHeading(
+                        document,
+                        "ASSESSMENT SUMMARY",
+                        sectionFont
+                );
+
+                PdfPTable summaryTable =
+                        new PdfPTable(2);
+
+                summaryTable.setWidthPercentage(100);
+
+                summaryTable.setWidths(
+                        new float[]{1.5f, 1.5f}
+                );
+
+                addMetadataCell(
+                        summaryTable,
+                        "AI SCORE",
+                        totalAiScore
+                                + " / "
+                                + totalMaxMarks
+                );
+
+                addMetadataCell(
+                        summaryTable,
+                        "QUESTIONS",
+                        String.valueOf(
+                                attempt.getTest()
+                                        .getQuestions()
+                                        .size()
+                        )
+                );
+
+                document.add(summaryTable);
+
+                document.add(
+                        new Paragraph(" ")
+                );
+                }
 
 
             document.add(
@@ -479,7 +568,17 @@ public class PdfExportService {
                                 )
                                 .findFirst()
                                 .orElse(null);
+                Evaluation evaluation = null;
 
+                if (submission != null) {
+
+                evaluation =
+                        evaluationRepository
+                                .findBySubmissionId(
+                                        submission.getId()
+                                )
+                                .orElse(null);
+                }
 
                 PdfPTable metadata =
                         new PdfPTable(2);
@@ -691,6 +790,216 @@ public class PdfExportService {
                         codeTable
                 );
 
+               // =========================================================
+                // AI EVALUATION
+                // =========================================================
+
+                if (evaluation != null &&
+                        (showAiScore || showAiFeedback)) {
+
+                addSectionHeading(
+                        document,
+                        "AI EVALUATION",
+                        sectionFont
+                );
+
+
+                // =====================================================
+                // SCORE
+                // =====================================================
+
+                if (showAiScore) {
+
+                        PdfPTable scoreTable =
+                                new PdfPTable(1);
+
+                        scoreTable.setWidthPercentage(100);
+
+
+                        PdfPCell scoreCell =
+                                new PdfPCell();
+
+                        scoreCell.setBackgroundColor(
+                                LIGHT_BLUE
+                        );
+
+                        scoreCell.setBorderColor(
+                                BORDER_COLOR
+                        );
+
+                        scoreCell.setPadding(12);
+
+
+                        Paragraph scoreTitle =
+                                new Paragraph(
+                                        "AI SCORE",
+                                        new Font(
+                                                Font.FontFamily.HELVETICA,
+                                                8,
+                                                Font.BOLD,
+                                                MUTED_COLOR
+                                        )
+                                );
+
+
+                        Paragraph scoreValue =
+                                new Paragraph(
+                                        evaluation.getTotalScore()
+                                                + " / "
+                                                + question.getMaxMarks(),
+                                        new Font(
+                                                Font.FontFamily.HELVETICA,
+                                                18,
+                                                Font.BOLD,
+                                                PRIMARY_DARK
+                                        )
+                                );
+
+
+                        scoreCell.addElement(scoreTitle);
+                        scoreCell.addElement(scoreValue);
+
+                        scoreTable.addCell(scoreCell);
+
+                        document.add(scoreTable);
+
+                        document.add(
+                                new Paragraph(" ")
+                        );
+
+
+                        // =================================================
+                        // EVALUATION CRITERIA
+                        // =================================================
+
+                        Paragraph criteriaHeading =
+                                new Paragraph(
+                                        "HOW YOUR CODE WAS EVALUATED",
+                                        boldFont
+                                );
+
+                        criteriaHeading.setSpacingAfter(6);
+
+                        document.add(criteriaHeading);
+
+
+                        PdfPTable criteriaTable =
+                                new PdfPTable(2);
+
+                        criteriaTable.setWidthPercentage(100);
+
+                        criteriaTable.setWidths(
+                                new float[]{3.5f, 1.2f}
+                        );
+
+
+                        addCriteriaRow(
+                                criteriaTable,
+                                "Logic & Correctness",
+                                "15",
+                                evaluation.getCorrectnessScore()
+                        );
+
+                        addCriteriaRow(
+                                criteriaTable,
+                                "Edge Case Handling",
+                                "6",
+                                evaluation.getEdgeCaseScore()
+                        );
+
+                        addCriteriaRow(
+                                criteriaTable,
+                                "Efficiency",
+                                "4",
+                                evaluation.getEfficiencyScore()
+                        );
+
+                        addCriteriaRow(
+                                criteriaTable,
+                                "Code Quality",
+                                "3",
+                                evaluation.getCodeQualityScore()
+                        );
+
+                        addCriteriaRow(
+                                criteriaTable,
+                                "Syntax & Completeness",
+                                "2",
+                                evaluation.getSyntaxScore()
+                        );
+
+
+                        document.add(criteriaTable);
+
+                        document.add(
+                                new Paragraph(" ")
+                        );
+
+                }
+                // =====================================================
+                // FEEDBACK
+                // =====================================================
+
+                if (showAiFeedback &&
+                        evaluation.getFeedback() != null &&
+                        !evaluation.getFeedback().isBlank()) {
+
+                        document.add(
+                                new Paragraph(" ")
+                        );
+
+                        Paragraph feedbackHeading =
+                                new Paragraph(
+                                        "AI FEEDBACK",
+                                        sectionFont
+                                );
+
+                        feedbackHeading.setSpacingAfter(6);
+
+                        document.add(feedbackHeading);
+
+
+                        PdfPTable feedbackTable =
+                                new PdfPTable(1);
+
+                        feedbackTable.setWidthPercentage(100);
+
+
+                        PdfPCell feedbackCell =
+                                new PdfPCell();
+
+                        feedbackCell.setBackgroundColor(
+                                LIGHT_GRAY
+                        );
+
+                        feedbackCell.setBorderColor(
+                                BORDER_COLOR
+                        );
+
+                        feedbackCell.setPadding(12);
+
+
+                        Paragraph feedback =
+                                new Paragraph(
+                                        evaluation.getFeedback(),
+                                        normalFont
+                                );
+
+                        feedback.setLeading(14);
+
+                        feedbackCell.addElement(
+                                feedback
+                        );
+
+                        feedbackTable.addCell(
+                                feedbackCell
+                        );
+
+                        document.add(
+                                feedbackTable
+                        );
+                }
+                }
 
                 // Question spacing
                 document.add(
@@ -915,4 +1224,69 @@ public class PdfExportService {
 
         document.add(heading);
     }
+
+    private void addCriteriaRow(
+        PdfPTable table,
+        String criterion,
+        String maximum,
+        Integer score
+        ) {
+
+    PdfPCell criterionCell =
+            new PdfPCell(
+                    new Phrase(
+                            criterion,
+                            new Font(
+                                    Font.FontFamily.HELVETICA,
+                                    9,
+                                    Font.BOLD,
+                                    TEXT_COLOR
+                            )
+                    )
+            );
+
+    criterionCell.setBackgroundColor(
+            LIGHT_GRAY
+    );
+
+    criterionCell.setBorderColor(
+            BORDER_COLOR
+    );
+
+    criterionCell.setPadding(8);
+
+
+    String scoreText =
+            (score == null ? "0" : score)
+                    + " / "
+                    + maximum;
+
+
+    PdfPCell scoreCell =
+            new PdfPCell(
+                    new Phrase(
+                            scoreText,
+                            new Font(
+                                    Font.FontFamily.HELVETICA,
+                                    9,
+                                    Font.BOLD,
+                                    PRIMARY_DARK
+                            )
+                    )
+            );
+
+    scoreCell.setHorizontalAlignment(
+            Element.ALIGN_RIGHT
+    );
+
+    scoreCell.setBorderColor(
+            BORDER_COLOR
+    );
+
+    scoreCell.setPadding(8);
+
+
+    table.addCell(criterionCell);
+    table.addCell(scoreCell);
+}
 }
