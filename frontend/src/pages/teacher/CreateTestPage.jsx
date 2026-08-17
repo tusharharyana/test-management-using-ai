@@ -26,6 +26,10 @@ function CreateTestPage() {
     title: "",
     description: "",
     durationMinutes: 30,
+
+    showAiScoreInPdf: false,
+    showAiFeedbackInPdf: false,
+
     questions: [createEmptyQuestion()],
   });
 
@@ -320,6 +324,103 @@ function CreateTestPage() {
                   onChange={handleTestFieldChange}
                   required
                 />
+              </div>
+            </div>
+            <div className="crb-ai-pdf-settings">
+              <div className="crb-ai-pdf-header">
+                <div>
+                  <h3>AI Evaluation Visibility</h3>
+                  <p>
+                    Choose what students can see in their downloaded test PDF.
+                  </p>
+                </div>
+              </div>
+
+              <div className="crb-ai-pdf-options">
+                {/* AI Score */}
+                <div className="crb-ai-pdf-option">
+                  <div className="crb-ai-pdf-option-info">
+                    <strong>AI Score</strong>
+                    <span>Show the AI-generated score in the student PDF.</span>
+                  </div>
+
+                  <div className="crb-ai-pdf-radio-group">
+                    <label className="crb-ai-pdf-radio">
+                      <input
+                        type="radio"
+                        name="showAiScoreInPdf"
+                        checked={formData.showAiScoreInPdf === true}
+                        onChange={() =>
+                          setFormData((previous) => ({
+                            ...previous,
+                            showAiScoreInPdf: true,
+                          }))
+                        }
+                      />
+
+                      <span>Show</span>
+                    </label>
+
+                    <label className="crb-ai-pdf-radio">
+                      <input
+                        type="radio"
+                        name="showAiScoreInPdf"
+                        checked={formData.showAiScoreInPdf === false}
+                        onChange={() =>
+                          setFormData((previous) => ({
+                            ...previous,
+                            showAiScoreInPdf: false,
+                          }))
+                        }
+                      />
+
+                      <span>Hide</span>
+                    </label>
+                  </div>
+                </div>
+
+                {/* AI Feedback */}
+                <div className="crb-ai-pdf-option">
+                  <div className="crb-ai-pdf-option-info">
+                    <strong>AI Feedback</strong>
+
+                    <span>Show AI-generated feedback in the student PDF.</span>
+                  </div>
+
+                  <div className="crb-ai-pdf-radio-group">
+                    <label className="crb-ai-pdf-radio">
+                      <input
+                        type="radio"
+                        name="showAiFeedbackInPdf"
+                        checked={formData.showAiFeedbackInPdf === true}
+                        onChange={() =>
+                          setFormData((previous) => ({
+                            ...previous,
+                            showAiFeedbackInPdf: true,
+                          }))
+                        }
+                      />
+
+                      <span>Show</span>
+                    </label>
+
+                    <label className="crb-ai-pdf-radio">
+                      <input
+                        type="radio"
+                        name="showAiFeedbackInPdf"
+                        checked={formData.showAiFeedbackInPdf === false}
+                        onChange={() =>
+                          setFormData((previous) => ({
+                            ...previous,
+                            showAiFeedbackInPdf: false,
+                          }))
+                        }
+                      />
+
+                      <span>Hide</span>
+                    </label>
+                  </div>
+                </div>
               </div>
             </div>
           </section>

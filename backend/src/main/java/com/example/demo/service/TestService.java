@@ -69,6 +69,14 @@ public class TestService {
         test.setTitle(request.getTitle());
         test.setDescription(request.getDescription());
         test.setDurationMinutes(request.getDurationMinutes());
+        
+        test.setShowAiScoreInPdf(
+        request.isShowAiScoreInPdf()
+        );
+
+        test.setShowAiFeedbackInPdf(
+                request.isShowAiFeedbackInPdf()
+        );
 
         test.setAccessCode(generateUniqueAccessCode());
 

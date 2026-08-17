@@ -11,6 +11,8 @@ import com.example.demo.repository.SubmissionRepository;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.example.demo.dto.response.EvaluationStatusResponse;
+import java.util.List;
 
 @Service
 public class EvaluationService {
@@ -251,5 +253,62 @@ public class EvaluationService {
 
                 evaluation.getEvaluatedAt()
         );
-    }
+        }
+        @Transactional(readOnly = true)
+        public EvaluationStatusResponse getAttemptEvaluationStatus(
+                Long attemptId
+        ) {
+
+        List<Submission> submissions =
+                submissionRepository.findAllByTestAttemptId(attemptId);
+
+        if (submissions.isEmpty()) {
+        return new EvaluationStatusResponse(
+                "COMPLETED",
+                0,
+                0,
+                0
+        );
+        }
+
+        int totalSubmissions = submissions.size();
+        int evaluatedSubmissions = 0;
+        int failedSubmissions = 0;
+
+        for (Submission submission : submissions) {
+
+                if (submission.getStatus() ==
+                        SubmissionStatus.EVALUATED) {
+
+                evaluatedSubmissions++;
+
+                } else if (submission.getStatus() ==
+                        SubmissionStatus.FAILED) {
+
+                failedSubmissions++;
+                }
+        }
+
+        String status;
+
+        if (evaluatedSubmissions == totalSubmissions) {
+
+                status = "COMPLETED";
+
+        } else if (failedSubmissions > 0) {
+
+                status = "FAILED";
+
+        } else {
+
+                status = "IN_PROGRESS";
+        }
+
+        return new EvaluationStatusResponse(
+                status,
+                totalSubmissions,
+                evaluatedSubmissions,
+                failedSubmissions
+        );
+        }
 }
