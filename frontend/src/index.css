@@ -3997,3 +3997,439 @@ button {
   margin-top: 8px;
   font-size: 13px;
 }
+/* ============================================
+   Submission Success Page
+   Namespace: submission-success-
+   ============================================ */
+
+.submission-success-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+/* ============================================
+   Main Card
+   ============================================ */
+
+.submission-success-card {
+  width: 100%;
+  max-width: 720px;
+  min-height: 480px;
+
+  background: #ffffff;
+  border-radius: 20px;
+
+  padding: 28px;
+
+  display: flex;
+  flex-direction: column;
+
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.08);
+
+  box-sizing: border-box;
+}
+
+/* ============================================
+   Top Bar
+   ============================================ */
+
+.submission-success-topbar {
+  width: 100%;
+
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.submission-success-check-btn {
+  border: none;
+  background: transparent;
+
+  color: #4f46e5;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  padding: 8px 12px;
+
+  border-radius: 8px;
+
+  transition:
+    background 0.2s ease,
+    opacity 0.2s ease;
+}
+
+.submission-success-check-btn:hover:not(:disabled) {
+  background: #f3f4ff;
+}
+
+.submission-success-check-btn:disabled {
+  cursor: default;
+  opacity: 0.65;
+}
+
+/* ============================================
+   Main Content
+   ============================================ */
+
+.submission-success-content {
+  flex: 1;
+
+  display: flex;
+  flex-direction: column;
+
+  align-items: center;
+  justify-content: center;
+
+  text-align: center;
+
+  padding: 30px 20px;
+}
+
+.submission-success-icon {
+  width: 72px;
+  height: 72px;
+
+  border-radius: 50%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  margin-bottom: 22px;
+
+  background: #ecfdf3;
+  color: #16a34a;
+
+  font-size: 34px;
+  font-weight: 700;
+}
+
+.submission-success-content h1 {
+  margin: 0;
+
+  color: #111827;
+
+  font-size: 30px;
+  font-weight: 700;
+}
+
+.submission-success-content p {
+  margin: 12px 0 24px;
+
+  color: #6b7280;
+
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+/* ============================================
+   Evaluation Status
+   ============================================ */
+
+.submission-success-status {
+  padding: 10px 18px;
+
+  border-radius: 999px;
+
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.submission-success-status-pending {
+  background: #fff7ed;
+  color: #c2410c;
+}
+
+.submission-success-status-completed {
+  background: #ecfdf3;
+  color: #15803d;
+}
+
+.submission-success-status-failed {
+  background: #fef2f2;
+  color: #dc2626;
+}
+
+/* ============================================
+   Bottom Actions
+   ============================================ */
+
+.submission-success-actions {
+  width: 100%;
+
+  display: flex;
+
+  justify-content: space-between;
+  align-items: center;
+
+  gap: 16px;
+
+  padding-top: 24px;
+
+  border-top: 1px solid #e5e7eb;
+}
+
+.submission-success-download-btn,
+.submission-success-home-btn {
+  min-width: 180px;
+
+  padding: 12px 20px;
+
+  border-radius: 10px;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  box-sizing: border-box;
+
+  transition:
+    background 0.2s ease,
+    opacity 0.2s ease,
+    transform 0.2s ease;
+}
+
+/* Download */
+
+.submission-success-download-btn {
+  border: none;
+
+  background: #4f46e5;
+  color: #ffffff;
+}
+
+.submission-success-download-btn:hover:not(:disabled) {
+  background: #4338ca;
+
+  transform: translateY(-1px);
+}
+
+.submission-success-download-btn:disabled {
+  background: #d1d5db;
+  color: #6b7280;
+
+  cursor: not-allowed;
+
+  transform: none;
+}
+
+/* Return Home */
+
+.submission-success-home-btn {
+  border: 1px solid #d1d5db;
+
+  background: #ffffff;
+  color: #374151;
+}
+
+.submission-success-home-btn:hover {
+  background: #f9fafb;
+}
+
+/* ============================================
+   Mobile
+   ============================================ */
+
+@media (max-width: 600px) {
+  .submission-success-page {
+    padding: 16px;
+  }
+
+  .submission-success-card {
+    min-height: 500px;
+
+    padding: 20px;
+  }
+
+  .submission-success-content {
+    padding: 24px 10px;
+  }
+
+  .submission-success-content h1 {
+    font-size: 24px;
+  }
+
+  .submission-success-actions {
+    flex-direction: column;
+  }
+
+  .submission-success-download-btn,
+  .submission-success-home-btn {
+    width: 100%;
+  }
+}
+/* =========================================================
+   CodeRanBhumi AI PDF Visibility Settings
+   Unique namespace: crb-ai-pdf-
+   ========================================================= */
+
+.crb-ai-pdf-settings {
+  width: 100%;
+  margin-top: 24px;
+
+  padding: 22px 24px;
+
+  background: #f8fafc;
+
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+
+  box-sizing: border-box;
+}
+
+/* =========================================================
+   Header
+   ========================================================= */
+
+.crb-ai-pdf-header {
+  margin-bottom: 18px;
+}
+
+.crb-ai-pdf-header h3 {
+  margin: 0;
+
+  font-size: 16px;
+  font-weight: 700;
+
+  color: #1e293b;
+}
+
+.crb-ai-pdf-header p {
+  margin: 6px 0 0;
+
+  font-size: 13px;
+  line-height: 1.5;
+
+  color: #64748b;
+}
+
+/* =========================================================
+   Options Container
+   ========================================================= */
+
+.crb-ai-pdf-options {
+  display: flex;
+  flex-direction: column;
+
+  gap: 12px;
+}
+
+/* =========================================================
+   Individual Option
+   ========================================================= */
+
+.crb-ai-pdf-option {
+  display: flex;
+
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 24px;
+
+  padding: 16px 18px;
+
+  background: #ffffff;
+
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+
+  box-sizing: border-box;
+}
+
+.crb-ai-pdf-option-info {
+  display: flex;
+  flex-direction: column;
+
+  gap: 4px;
+
+  min-width: 0;
+}
+
+.crb-ai-pdf-option-info strong {
+  font-size: 14px;
+  font-weight: 600;
+
+  color: #1e293b;
+}
+
+.crb-ai-pdf-option-info span {
+  font-size: 12px;
+  line-height: 1.4;
+
+  color: #64748b;
+}
+
+/* =========================================================
+   Radio Group
+   ========================================================= */
+
+.crb-ai-pdf-radio-group {
+  display: flex;
+
+  align-items: center;
+
+  gap: 18px;
+
+  flex-shrink: 0;
+}
+
+.crb-ai-pdf-radio {
+  display: inline-flex;
+
+  align-items: center;
+
+  gap: 6px;
+
+  font-size: 13px;
+  font-weight: 500;
+
+  color: #475569;
+
+  cursor: pointer;
+
+  white-space: nowrap;
+}
+
+.crb-ai-pdf-radio input {
+  width: 16px;
+  height: 16px;
+
+  margin: 0;
+
+  cursor: pointer;
+
+  accent-color: #4f46e5;
+}
+
+.crb-ai-pdf-radio:hover span {
+  color: #1e293b;
+}
+
+/* =========================================================
+   Mobile
+   ========================================================= */
+
+@media (max-width: 650px) {
+  .crb-ai-pdf-settings {
+    padding: 18px;
+  }
+
+  .crb-ai-pdf-option {
+    flex-direction: column;
+
+    align-items: flex-start;
+
+    gap: 14px;
+  }
+
+  .crb-ai-pdf-radio-group {
+    width: 100%;
+  }
+}

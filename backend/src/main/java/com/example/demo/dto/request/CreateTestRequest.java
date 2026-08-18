@@ -23,7 +23,8 @@ public class CreateTestRequest {
             message = "Test duration must be at least 1 minute"
     )
     private Integer durationMinutes;
-
+    private boolean showAiScoreInPdf = false;
+    private boolean showAiFeedbackInPdf = false;
 
     @NotEmpty(message = "At least one question is required")
     @Valid
@@ -75,5 +76,20 @@ public class CreateTestRequest {
             List<CreateQuestionRequest> questions
     ) {
         this.questions = questions;
+    }
+    public boolean isShowAiScoreInPdf() {
+    return showAiScoreInPdf;
+    }
+
+    public void setShowAiScoreInPdf(boolean showAiScoreInPdf) {
+        this.showAiScoreInPdf = showAiScoreInPdf;
+    }
+
+    public boolean isShowAiFeedbackInPdf() {
+        return showAiFeedbackInPdf;
+    }
+
+    public void setShowAiFeedbackInPdf(boolean showAiFeedbackInPdf) {
+        this.showAiFeedbackInPdf = showAiFeedbackInPdf;
     }
 }

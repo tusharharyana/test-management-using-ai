@@ -32,6 +32,12 @@ public class Test {
     @Column(name = "duration_minutes", nullable = false)
     private Integer durationMinutes;
 
+    @Column(name = "show_ai_score_in_pdf", nullable = false)
+    private boolean showAiScoreInPdf = false;
+
+    @Column(name = "show_ai_feedback_in_pdf", nullable = false)
+    private boolean showAiFeedbackInPdf = false;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private TestStatus status;
@@ -173,5 +179,21 @@ public class Test {
 
     public void setQuestions(List<Question> questions) {
         this.questions = questions;
+    }
+
+        public boolean isShowAiScoreInPdf() {
+        return showAiScoreInPdf;
+    }
+
+    public void setShowAiScoreInPdf(boolean showAiScoreInPdf) {
+        this.showAiScoreInPdf = showAiScoreInPdf;
+    }
+
+    public boolean isShowAiFeedbackInPdf() {
+        return showAiFeedbackInPdf;
+    }
+
+    public void setShowAiFeedbackInPdf(boolean showAiFeedbackInPdf) {
+        this.showAiFeedbackInPdf = showAiFeedbackInPdf;
     }
 }

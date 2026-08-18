@@ -5,6 +5,7 @@ import com.example.demo.service.EvaluationService;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import com.example.demo.dto.response.EvaluationStatusResponse;
 
 @RestController
 @RequestMapping("/api/evaluations")
@@ -31,4 +32,15 @@ public class EvaluationController {
                         .evaluateSubmission(submissionId)
         );
     }
+        @GetMapping("/attempt/{attemptId}/status")
+        public ResponseEntity<EvaluationStatusResponse>
+        getAttemptEvaluationStatus(
+                @PathVariable Long attemptId
+        ) {
+
+        return ResponseEntity.ok(
+                evaluationService
+                        .getAttemptEvaluationStatus(attemptId)
+        );
+        }
 }

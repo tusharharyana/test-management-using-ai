@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { downloadMyTest } from "../../api/exportApi";
-
+import { downloadMyTest, getEvaluationStatus } from "../../api/exportApi";
 function SubmissionSuccessPage() {
   const navigate = useNavigate();
   const [downloading, setDownloading] = useState(false);
+  const [checkingEvaluation, setCheckingEvaluation] = useState(false);
+  const [evaluationStatus, setEvaluationStatus] = useState("IN_PROGRESS");
+  const [evaluationProgress, setEvaluationProgress] = useState(null);
   const storedResult = sessionStorage.getItem("lastSubmissionResult");
 
   useEffect(() => {
@@ -20,6 +22,29 @@ function SubmissionSuccessPage() {
   } catch {
     result = null;
   }
+
+  const handleCheckEvaluation = async () => {
+    if (!result?.attemptId) {
+      alert("Unable to find your test attempt.");
+      return;
+    }
+
+    try {
+      setCheckingEvaluation(true);
+
+      const status = await getEvaluationStatus(result.attemptId);
+
+      setEvaluationStatus(status.status);
+
+      setEvaluationProgress(status);
+    } catch (error) {
+      console.error("Failed to check evaluation status:", error);
+
+      alert("Unable to check evaluation status. Please try again.");
+    } finally {
+      setCheckingEvaluation(false);
+    }
+  };
 
   const handleDownloadTest = async () => {
     if (!result?.attemptId) {
@@ -57,55 +82,70 @@ function SubmissionSuccessPage() {
   };
 
   return (
-    <div className="success-page">
-      <div className="success-card">
-        <div className="success-icon">✓</div>
-
-        <h1>Test Submitted Successfully</h1>
-
-        <p>Your code has been submitted and sent for AI evaluation.</p>
-
-        {result && (
-          <div className="success-details">
-            <div>
-              <span>Test</span>
-
-              <strong>{result.testTitle}</strong>
-            </div>
-
-            <div>
-              <span>Attempt ID</span>
-
-              <strong>#{result.attemptId}</strong>
-            </div>
-
-            <div>
-              <span>Solutions Submitted</span>
-
-              <strong>{result.submissionIds?.length || 0}</strong>
-            </div>
-          </div>
-        )}
-
-        {result?.autoSubmitted && (
-          <div className="auto-submit-notice">
-            Your test was automatically submitted because the time expired.
-          </div>
-        )}
-
-        <div className="success-action-buttons">
+    <div className="submission-success-page">
+      <div className="submission-success-card">
+        {/* Top status action */}
+        <div className="submission-success-topbar">
           <button
-            className="download-test-button"
+            className="submission-success-check-btn"
+            onClick={handleCheckEvaluation}
+            disabled={checkingEvaluation || evaluationStatus === "COMPLETED"}
+          >
+            {checkingEvaluation
+              ? "Checking..."
+              : evaluationStatus === "COMPLETED"
+                ? "✓ Evaluation Completed"
+                : "↻ Check Status"}
+          </button>
+        </div>
+
+        {/* Main content */}
+        <div className="submission-success-content">
+          <div className="submission-success-icon">✓</div>
+
+          <h1>Test Submitted Successfully</h1>
+
+          <p>
+            {evaluationStatus === "COMPLETED"
+              ? "Your results are ready."
+              : "Your test has been submitted. AI evaluation is in progress."}
+          </p>
+
+          {/* Evaluation status */}
+          <div
+            className={`submission-success-status ${
+              evaluationStatus === "COMPLETED"
+                ? "submission-success-status-completed"
+                : evaluationStatus === "FAILED"
+                  ? "submission-success-status-failed"
+                  : "submission-success-status-pending"
+            }`}
+          >
+            {evaluationStatus === "COMPLETED" && <>✓ AI Evaluation Completed</>}
+
+            {evaluationStatus === "IN_PROGRESS" && (
+              <>⏳ AI Evaluation in Progress</>
+            )}
+
+            {evaluationStatus === "FAILED" && <>⚠ AI Evaluation Failed</>}
+          </div>
+        </div>
+
+        {/* Bottom actions */}
+        <div className="submission-success-actions">
+          <button
+            className="submission-success-download-btn"
             onClick={handleDownloadTest}
-            disabled={downloading}
+            disabled={downloading || evaluationStatus !== "COMPLETED"}
           >
             {downloading ? "Preparing PDF..." : "Download My Test"}
           </button>
 
           <button
-            className="return-home-button"
+            className="submission-success-home-btn"
             onClick={() => {
               sessionStorage.removeItem("lastSubmissionResult");
+
               navigate("/");
             }}
           >
