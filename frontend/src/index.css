@@ -42,16 +42,12 @@ button {
   justify-content: center;
   padding: 48px 20px;
   background:
-    radial-gradient(
-      circle at top left,
+    radial-gradient(circle at top left,
       rgba(79, 70, 229, 0.12),
-      transparent 35%
-    ),
-    radial-gradient(
-      circle at bottom right,
+      transparent 35%),
+    radial-gradient(circle at bottom right,
       rgba(14, 165, 233, 0.12),
-      transparent 35%
-    ),
+      transparent 35%),
     #f8fafc;
 }
 
@@ -643,7 +639,7 @@ button {
   color: #172033;
 }
 
-.confirmation-modal > p {
+.confirmation-modal>p {
   margin: 0 0 22px;
   color: #64748b;
 }
@@ -733,7 +729,7 @@ button {
   font-size: 30px;
 }
 
-.success-card > p {
+.success-card>p {
   margin: 0 auto 28px;
   color: #64748b;
   line-height: 1.7;
@@ -747,7 +743,7 @@ button {
   text-align: left;
 }
 
-.success-details > div {
+.success-details>div {
   display: flex;
   justify-content: space-between;
   gap: 20px;
@@ -755,7 +751,7 @@ button {
   border-bottom: 1px solid #e2e8f0;
 }
 
-.success-details > div:last-child {
+.success-details>div:last-child {
   border-bottom: none;
 }
 
@@ -1151,12 +1147,12 @@ button {
   overflow: hidden;
 }
 
-.test-card-stats > div {
+.test-card-stats>div {
   padding: 12px;
   border-right: 1px solid #e2e8f0;
 }
 
-.test-card-stats > div:last-child {
+.test-card-stats>div:last-child {
   border-right: none;
 }
 
@@ -1452,12 +1448,12 @@ button {
     grid-template-columns: 1fr;
   }
 
-  .test-card-stats > div {
+  .test-card-stats>div {
     border-right: none;
     border-bottom: 1px solid #e2e8f0;
   }
 
-  .test-card-stats > div:last-child {
+  .test-card-stats>div:last-child {
     border-bottom: none;
   }
 
@@ -1706,7 +1702,7 @@ button {
   text-align: center;
 }
 
-.results-empty-state > div {
+.results-empty-state>div {
   margin-bottom: 10px;
   font-size: 35px;
 }
@@ -1764,14 +1760,14 @@ button {
   overflow: hidden;
 }
 
-.student-score-summary > div {
+.student-score-summary>div {
   min-width: 105px;
   padding: 13px 18px;
   border-right: 1px solid #e2e8f0;
   text-align: center;
 }
 
-.student-score-summary > div:last-child {
+.student-score-summary>div:last-child {
   border-right: none;
 }
 
@@ -1889,13 +1885,13 @@ button {
   overflow: hidden;
 }
 
-.score-breakdown-grid > div {
+.score-breakdown-grid>div {
   padding: 14px;
   border-right: 1px solid #e2e8f0;
   text-align: center;
 }
 
-.score-breakdown-grid > div:last-child {
+.score-breakdown-grid>div:last-child {
   border-right: none;
 }
 
@@ -1981,13 +1977,13 @@ button {
   overflow: hidden;
 }
 
-.score-comparison-row > div {
+.score-comparison-row>div {
   padding: 13px;
   border-right: 1px solid #e2e8f0;
   text-align: center;
 }
 
-.score-comparison-row > div:last-child {
+.score-comparison-row>div:last-child {
   border-right: none;
 }
 
@@ -2102,7 +2098,7 @@ button {
     width: 100%;
   }
 
-  .student-score-summary > div {
+  .student-score-summary>div {
     flex: 1;
   }
 
@@ -2110,7 +2106,7 @@ button {
     grid-template-columns: repeat(2, 1fr);
   }
 
-  .score-breakdown-grid > div {
+  .score-breakdown-grid>div {
     border-bottom: 1px solid #e2e8f0;
   }
 
@@ -2147,7 +2143,7 @@ button {
     grid-template-columns: repeat(3, 1fr);
   }
 
-  .student-score-summary > div {
+  .student-score-summary>div {
     min-width: 0;
     padding: 11px 5px;
   }
@@ -2156,7 +2152,7 @@ button {
     grid-template-columns: 1fr;
   }
 
-  .score-breakdown-grid > div {
+  .score-breakdown-grid>div {
     border-right: none;
   }
 
@@ -2164,7 +2160,7 @@ button {
     grid-template-columns: 1fr;
   }
 
-  .score-comparison-row > div {
+  .score-comparison-row>div {
     border-right: none;
     border-bottom: 1px solid #e2e8f0;
   }
@@ -2427,6 +2423,7 @@ button {
   width: auto;
   margin: 0;
 }
+
 .internet-status-banner {
   position: fixed;
 
@@ -2463,6 +2460,7 @@ button {
 .internet-status-banner span {
   opacity: 0.95;
 }
+
 /* =========================================
    SYSTEM CHECK PAGE
 ========================================= */
@@ -2756,6 +2754,7 @@ button {
 }
 
 @keyframes check-pulse {
+
   0%,
   100% {
     opacity: 1;
@@ -2869,7 +2868,7 @@ button {
    Text container
 */
 
-.system-check-success > div:last-child {
+.system-check-success>div:last-child {
   flex: 1;
 
   min-width: 0;
@@ -2954,7 +2953,7 @@ button {
   font-weight: 700;
 }
 
-.system-check-error > div:last-child {
+.system-check-error>div:last-child {
   display: flex;
 
   flex-direction: column;
@@ -3665,7 +3664,7 @@ button {
   border-bottom: 1px solid #dbe3ef;
 }
 
-.submitted-code-header > div {
+.submitted-code-header>div {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -3936,19 +3935,38 @@ button {
   cursor: not-allowed;
 }
 
+/* =========================================================
+   STUDENT TEST - RUN CODE RESULT PANEL
+   ========================================================= */
+
 .run-result-panel {
   margin-top: 12px;
-  padding: 16px;
+  padding: 14px;
   border-radius: 8px;
   background: #f8f9fa;
   border: 1px solid #ddd;
+
+  /* Prevent result output from taking over the test screen */
+  max-height: 34vh;
+  overflow-y: auto;
+
+  /* Keep the panel usable */
+  box-sizing: border-box;
 }
 
 .run-result-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
+
+  /* Keep header visible while scrolling */
+  position: sticky;
+  top: 0;
+  z-index: 2;
+
+  background: #f8f9fa;
+  padding-bottom: 8px;
 }
 
 .run-status {
@@ -3966,7 +3984,8 @@ button {
 .run-summary {
   display: flex;
   gap: 25px;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
 }
 
 .test-case-results {
@@ -3984,19 +4003,41 @@ button {
   border-radius: 5px;
 }
 
+/* =========================================================
+   COMPILATION ERROR
+   ========================================================= */
+
 .compile-error-box {
-  margin-top: 12px;
+  margin-top: 10px;
   padding: 12px;
   background: #fff3f3;
   border: 1px solid #dc3545;
   border-radius: 6px;
+
+  /* Don't let huge compiler output expand the panel */
+  overflow: hidden;
 }
 
 .compile-error-box pre {
   white-space: pre-wrap;
+  overflow-x: auto;
+  overflow-y: auto;
+
+  /* Main fix */
+  max-height: 220px;
+
   margin-top: 8px;
+  margin-bottom: 0;
+
   font-size: 13px;
+  line-height: 1.45;
+
+  /* Prevent extremely long lines from breaking layout */
+  overflow-wrap: anywhere;
+
+  box-sizing: border-box;
 }
+
 /* ============================================
    Submission Success Page
    Namespace: submission-success-
@@ -4265,6 +4306,7 @@ button {
     width: 100%;
   }
 }
+
 /* =========================================================
    CodeRanBhumi AI PDF Visibility Settings
    Unique namespace: crb-ai-pdf-
