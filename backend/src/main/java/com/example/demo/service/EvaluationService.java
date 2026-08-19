@@ -140,89 +140,101 @@ public class EvaluationService {
 
 
     private void validateAiResult(
-            AiEvaluationResult result
-    ) {
+        AiEvaluationResult result
+) {
 
-        if (result == null) {
-            throw new RuntimeException(
-                    "AI returned an empty evaluation"
-            );
-        }
-
-
-        if (result.getCorrectnessScore() == null
-                || result.getCorrectnessScore() < 0
-                || result.getCorrectnessScore() > 15) {
-
-            throw new RuntimeException(
-                    "Invalid correctness score returned by AI"
-            );
-        }
-
-
-        if (result.getEdgeCaseScore() == null
-                || result.getEdgeCaseScore() < 0
-                || result.getEdgeCaseScore() > 6) {
-
-            throw new RuntimeException(
-                    "Invalid edge-case score returned by AI"
-            );
-        }
-
-
-        if (result.getEfficiencyScore() == null
-                || result.getEfficiencyScore() < 0
-                || result.getEfficiencyScore() > 4) {
-
-            throw new RuntimeException(
-                    "Invalid efficiency score returned by AI"
-            );
-        }
-
-
-        if (result.getCodeQualityScore() == null
-                || result.getCodeQualityScore() < 0
-                || result.getCodeQualityScore() > 3) {
-
-            throw new RuntimeException(
-                    "Invalid code-quality score returned by AI"
-            );
-        }
-
-
-        if (result.getSyntaxScore() == null
-                || result.getSyntaxScore() < 0
-                || result.getSyntaxScore() > 2) {
-
-            throw new RuntimeException(
-                    "Invalid syntax score returned by AI"
-            );
-        }
-
-
-        int calculatedTotal =
-                result.getCorrectnessScore()
-                        + result.getEdgeCaseScore()
-                        + result.getEfficiencyScore()
-                        + result.getCodeQualityScore()
-                        + result.getSyntaxScore();
-
-
-        // Do not blindly trust AI's total.
-        // Our backend calculates the final total itself.
-
-        result.setScore(calculatedTotal);
-
-
-        if (result.getConfidence() == null
-                || result.getConfidence() < 0
-                || result.getConfidence() > 100) {
-
-            throw new RuntimeException(
-                    "Invalid confidence returned by AI"
-            );
-        }
+    if (result == null) {
+        throw new RuntimeException(
+                "AI returned an empty evaluation"
+        );
     }
+
+    if (result.getCorrectnessScore() == null
+            || result.getCorrectnessScore() < 0) {
+
+        throw new RuntimeException(
+                "Invalid correctness score returned by AI"
+        );
+    }
+
+
+    if (result.getEdgeCaseScore() == null
+            || result.getEdgeCaseScore() < 0) {
+
+        throw new RuntimeException(
+                "Invalid edge-case score returned by AI"
+        );
+    }
+
+
+    if (result.getEfficiencyScore() == null
+            || result.getEfficiencyScore() < 0) {
+
+        throw new RuntimeException(
+                "Invalid efficiency score returned by AI"
+        );
+    }
+
+
+    if (result.getCodeQualityScore() == null
+            || result.getCodeQualityScore() < 0) {
+
+        throw new RuntimeException(
+                "Invalid code-quality score returned by AI"
+        );
+    }
+
+
+    if (result.getSyntaxScore() == null
+            || result.getSyntaxScore() < 0) {
+
+        throw new RuntimeException(
+                "Invalid syntax score returned by AI"
+        );
+    }
+
+    result.setCorrectnessScore(
+            Math.min(result.getCorrectnessScore(), 15)
+    );
+
+    result.setEdgeCaseScore(
+            Math.min(result.getEdgeCaseScore(), 6)
+    );
+
+    result.setEfficiencyScore(
+            Math.min(result.getEfficiencyScore(), 4)
+    );
+
+    result.setCodeQualityScore(
+            Math.min(result.getCodeQualityScore(), 3)
+    );
+
+    result.setSyntaxScore(
+            Math.min(result.getSyntaxScore(), 2)
+    );
+
+    int calculatedTotal =
+            result.getCorrectnessScore()
+                    + result.getEdgeCaseScore()
+                    + result.getEfficiencyScore()
+                    + result.getCodeQualityScore()
+                    + result.getSyntaxScore();
+
+
+    // Do not blindly trust AI's total.
+    // Backend calculates the final total.
+
+    result.setScore(calculatedTotal);
+
+    if (result.getConfidence() == null
+            || result.getConfidence() < 0
+            || result.getConfidence() > 100) {
+
+        throw new RuntimeException(
+                "Invalid confidence returned by AI"
+        );
+    }
+}
 
 
     private EvaluationResponse mapToResponse(
