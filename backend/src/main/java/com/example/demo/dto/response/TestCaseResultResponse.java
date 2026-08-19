@@ -6,6 +6,10 @@ public class TestCaseResultResponse {
 
     private String status;
 
+    private String input;
+
+    private String expectedOutput;
+
     private String actualOutput;
 
 
@@ -16,10 +20,14 @@ public class TestCaseResultResponse {
     public TestCaseResultResponse(
             Integer testCaseOrder,
             String status,
+            String input,
+            String expectedOutput,
             String actualOutput
     ) {
         this.testCaseOrder = testCaseOrder;
         this.status = status;
+        this.input = input;
+        this.expectedOutput = expectedOutput;
         this.actualOutput = actualOutput;
     }
 
@@ -28,9 +36,21 @@ public class TestCaseResultResponse {
         return testCaseOrder;
     }
 
+
     public String getStatus() {
         return status;
     }
+
+
+    public String getInput() {
+        return input;
+    }
+
+
+    public String getExpectedOutput() {
+        return expectedOutput;
+    }
+
 
     public String getActualOutput() {
         return actualOutput;

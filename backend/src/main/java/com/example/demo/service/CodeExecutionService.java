@@ -188,6 +188,8 @@ public class CodeExecutionService {
                         new TestCaseResultResponse(
                                 testCase.getTestCaseOrder(),
                                 "TIME_LIMIT_EXCEEDED",
+                                testCase.getInput(),
+                                testCase.getExpectedOutput(),
                                 getActualOutput(result)
                         )
                 );
@@ -210,6 +212,8 @@ public class CodeExecutionService {
                         new TestCaseResultResponse(
                                 testCase.getTestCaseOrder(),
                                 "RUNTIME_ERROR",
+                                testCase.getInput(),
+                                testCase.getExpectedOutput(),
                                 getActualOutput(result)
                         )
                 );
@@ -232,6 +236,8 @@ public class CodeExecutionService {
                                 judge0Status
                                         .toUpperCase()
                                         .replace(" ", "_"),
+                                testCase.getInput(),
+                                testCase.getExpectedOutput(),
                                 getActualOutput(result)
                         )
                 );
@@ -269,9 +275,11 @@ public class CodeExecutionService {
                 passed++;
 
                 results.add(
-                        new TestCaseResultResponse(
+                       new TestCaseResultResponse(
                                 testCase.getTestCaseOrder(),
                                 "PASSED",
+                                testCase.getInput(),
+                                expectedOutput,
                                 actualOutput
                         )
                 );
@@ -284,6 +292,8 @@ public class CodeExecutionService {
                         new TestCaseResultResponse(
                                 testCase.getTestCaseOrder(),
                                 "FAILED",
+                                testCase.getInput(),
+                                expectedOutput,
                                 actualOutput
                         )
                 );
