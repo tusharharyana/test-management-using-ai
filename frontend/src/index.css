@@ -4475,3 +4475,226 @@ button {
     width: 100%;
   }
 }
+
+/* =========================================================
+   STUDENT RUN CODE - TEST CASE DETAILS
+   Unique prefix: student-run-
+   ========================================================= */
+
+.student-run-testcases {
+  margin-top: 14px;
+  max-height: 360px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 4px;
+}
+
+
+/* Custom scrollbar */
+
+.student-run-testcases::-webkit-scrollbar {
+  width: 7px;
+}
+
+.student-run-testcases::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.student-run-testcases::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 10px;
+}
+
+.student-run-testcases::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+
+/* Individual test case */
+
+.student-run-testcase {
+  margin-bottom: 8px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #ffffff;
+}
+
+
+/* Passed / failed border */
+
+.student-run-testcase-passed {
+  border-left: 4px solid #198754;
+}
+
+.student-run-testcase-failed {
+  border-left: 4px solid #dc3545;
+}
+
+
+/* Header */
+
+.student-run-testcase-header {
+  width: 100%;
+  border: none;
+  background: #ffffff;
+  padding: 11px 13px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.15s ease;
+}
+
+.student-run-testcase-header:hover {
+  background: #f8fafc;
+}
+
+
+/* Title */
+
+.student-run-testcase-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.student-run-testcase-title strong {
+  font-size: 13px;
+  color: #1e293b;
+}
+
+
+/* Status icon */
+
+.student-run-testcase-icon {
+  width: 22px;
+  height: 22px;
+  min-width: 22px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.student-run-testcase-icon-passed {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.student-run-testcase-icon-failed {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+
+/* Header right */
+
+.student-run-testcase-header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.student-run-testcase-status {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 8px;
+  border-radius: 999px;
+}
+
+.student-run-testcase-status-passed {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.student-run-testcase-status-failed {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.student-run-testcase-arrow {
+  font-size: 10px;
+  color: #64748b;
+}
+
+
+/* Details */
+
+.student-run-testcase-details {
+  padding: 0 12px 12px;
+  background: #f8fafc;
+}
+
+
+/* Output blocks */
+
+.student-run-output-block {
+  margin-top: 10px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #ffffff;
+}
+
+
+/* Labels */
+
+.student-run-output-label {
+  padding: 7px 10px;
+  background: #f1f5f9;
+  border-bottom: 1px solid #e2e8f0;
+  font-size: 11px;
+  font-weight: 700;
+  color: #475569;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+
+/* Output text */
+
+.student-run-output-block pre {
+  margin: 0;
+  padding: 10px;
+  max-height: 130px;
+  overflow: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-family: "Fira Code", "Consolas", monospace;
+  font-size: 12px;
+  line-height: 1.5;
+  color: #1e293b;
+}
+
+
+/* Actual output */
+
+.student-run-output-actual-passed {
+  border-left: 3px solid #198754;
+}
+
+.student-run-output-actual-failed {
+  border-left: 3px solid #dc3545;
+}
+
+
+/* Output scrollbar */
+
+.student-run-output-block pre::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.student-run-output-block pre::-webkit-scrollbar-track {
+  background: #f8fafc;
+}
+
+.student-run-output-block pre::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 8px;
+}

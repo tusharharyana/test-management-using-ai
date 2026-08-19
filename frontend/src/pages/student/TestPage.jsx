@@ -86,6 +86,7 @@ function TestPage() {
   const [submitting, setSubmitting] = useState(false);
   const [runningCode, setRunningCode] = useState(false);
   const [runResult, setRunResult] = useState(null);
+  const [expandedTestCases, setExpandedTestCases] = useState({});
   const [examEnded, setExamEnded] = useState(false);
   const submittingRef = useRef(false);
   const examEndedRef = useRef(false);
@@ -280,6 +281,13 @@ function TestPage() {
     });
   };
 
+  const toggleTestCase = (testCaseOrder) => {
+    setExpandedTestCases((previous) => ({
+      ...previous,
+      [testCaseOrder]: !previous[testCaseOrder],
+    }));
+  };
+
   const handleRunCode = async () => {
     if (!currentQuestionKey || !currentQuestion) {
       return;
@@ -298,6 +306,7 @@ function TestPage() {
     try {
       setRunningCode(true);
       setRunResult(null);
+      setExpandedTestCases({});
       setError("");
 
       const result = await runCode({
@@ -307,12 +316,21 @@ function TestPage() {
       });
 
       setRunResult(result);
+      const failedCases = {};
+
+      result.results?.forEach((testCase) => {
+        if (testCase.status !== "PASSED") {
+          failedCases[testCase.testCaseOrder] = true;
+        }
+      });
+
+      setExpandedTestCases(failedCases);
     } catch (error) {
       console.error("Code execution failed:", error);
 
       setError(
         error.response?.data?.message ||
-          "Unable to run code. Please try again.",
+        "Unable to run code. Please try again.",
       );
     } finally {
       setRunningCode(false);
@@ -643,19 +661,106 @@ function TestPage() {
               )}
 
               {runResult.results?.length > 0 && (
-                <div className="test-case-results">
-                  {runResult.results.map((testCase) => (
-                    <div
-                      key={testCase.testCaseOrder}
-                      className="test-case-result"
-                    >
-                      <span>{testCase.status === "PASSED" ? "✓" : "✗"}</span>
+                <div className="student-run-testcases">
+                  {runResult.results.map((testCase) => {
+                    const isExpanded =
+                      expandedTestCases[testCase.testCaseOrder] === true;
 
-                      <strong>Test Case {testCase.testCaseOrder}</strong>
+                    const isPassed = testCase.status === "PASSED";
 
-                      <span>{testCase.status}</span>
-                    </div>
-                  ))}
+                    return (
+                      <div
+                        key={testCase.testCaseOrder}
+                        className={`student-run-testcase ${isPassed
+                          ? "student-run-testcase-passed"
+                          : "student-run-testcase-failed"
+                          }`}
+                      >
+                        {/* Test case header */}
+                        <button
+                          type="button"
+                          className="student-run-testcase-header"
+                          onClick={() =>
+                            toggleTestCase(testCase.testCaseOrder)
+                          }
+                        >
+                          <div className="student-run-testcase-title">
+                            <span
+                              className={`student-run-testcase-icon ${isPassed
+                                ? "student-run-testcase-icon-passed"
+                                : "student-run-testcase-icon-failed"
+                                }`}
+                            >
+                              {isPassed ? "✓" : "✗"}
+                            </span>
+
+                            <strong>
+                              Test Case {testCase.testCaseOrder}
+                            </strong>
+                          </div>
+
+                          <div className="student-run-testcase-header-right">
+                            <span
+                              className={`student-run-testcase-status ${isPassed
+                                ? "student-run-testcase-status-passed"
+                                : "student-run-testcase-status-failed"
+                                }`}
+                            >
+                              {testCase.status}
+                            </span>
+
+                            <span className="student-run-testcase-arrow">
+                              {isExpanded ? "▲" : "▼"}
+                            </span>
+                          </div>
+                        </button>
+
+                        {/* Test case details */}
+                        {isExpanded && (
+                          <div className="student-run-testcase-details">
+
+                            <div className="student-run-output-block">
+                              <div className="student-run-output-label">
+                                Input
+                              </div>
+
+                              <pre>
+                                {testCase.input || "No input"}
+                              </pre>
+                            </div>
+
+
+                            <div className="student-run-output-block">
+                              <div className="student-run-output-label">
+                                Expected Output
+                              </div>
+
+                              <pre>
+                                {testCase.expectedOutput || "No expected output"}
+                              </pre>
+                            </div>
+
+
+                            <div
+                              className={`student-run-output-block ${isPassed
+                                ? "student-run-output-actual-passed"
+                                : "student-run-output-actual-failed"
+                                }`}
+                            >
+                              <div className="student-run-output-label">
+                                Your Output
+                              </div>
+
+                              <pre>
+                                {testCase.actualOutput || "No output"}
+                              </pre>
+                            </div>
+
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
               )}
             </div>
