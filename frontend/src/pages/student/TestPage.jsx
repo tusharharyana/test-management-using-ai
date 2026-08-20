@@ -400,6 +400,7 @@ function TestPage() {
             language: answer.language,
 
             sourceCode: answer.code,
+            autoSubmit: autoSubmit,
           });
 
           submissionIds.push(submission.submissionId);
@@ -409,7 +410,7 @@ function TestPage() {
          * Mark overall attempt as submitted.
          */
 
-        await submitTestAttempt(Number(attempt.attemptId));
+        await submitTestAttempt(Number(attempt.attemptId), autoSubmit,);
 
         /*
          * Save basic success information.

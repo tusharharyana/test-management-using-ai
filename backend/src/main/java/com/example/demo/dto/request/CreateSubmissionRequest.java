@@ -22,6 +22,8 @@ public class CreateSubmissionRequest {
     @NotBlank(message = "Source code cannot be empty")
     private String sourceCode;
 
+    private boolean autoSubmit;
+
 
     public CreateSubmissionRequest() {
     }
@@ -66,5 +68,13 @@ public class CreateSubmissionRequest {
 
     public void setSourceCode(String sourceCode) {
         this.sourceCode = sourceCode;
+    }
+
+     public boolean isAutoSubmit() {
+        return autoSubmit;
+    }
+
+    public void setAutoSubmit(boolean autoSubmit) {
+        this.autoSubmit = autoSubmit;
     }
 }
