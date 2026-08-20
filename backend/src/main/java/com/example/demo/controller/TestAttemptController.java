@@ -38,11 +38,12 @@ public class TestAttemptController {
 
     @PostMapping("/{attemptId}/submit")
         public ResponseEntity<TestAttemptResponse> submitTest(
-                @PathVariable Long attemptId
+                @PathVariable Long attemptId,
+                @RequestParam(defaultValue = "false") boolean autoSubmit
         ) {
 
         return ResponseEntity.ok(
-                testAttemptService.submitTest(attemptId)
+                testAttemptService.submitTest(attemptId, autoSubmit)
         );
         }
         @DeleteMapping("/{attemptId}")

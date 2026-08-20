@@ -75,7 +75,7 @@ public class SubmissionService {
 
 
         // 3. Check whether test time has expired
-        if (LocalDateTime.now().isAfter(attempt.getExpiresAt())) {
+        if (LocalDateTime.now().isAfter(attempt.getExpiresAt()) && !request.isAutoSubmit()) {
 
             attempt.setStatus(AttemptStatus.EXPIRED);
 

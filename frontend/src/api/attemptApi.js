@@ -6,8 +6,19 @@ export const startTest = async (studentData) => {
   return response.data;
 };
 
-export const submitTestAttempt = async (attemptId) => {
-  const response = await axiosInstance.post(`/attempts/${attemptId}/submit`);
+export const submitTestAttempt = async (
+  attemptId,
+  autoSubmit = false,
+) => {
+  const response = await axiosInstance.post(
+    `/attempts/${attemptId}/submit`,
+    null,
+    {
+      params: {
+        autoSubmit,
+      },
+    },
+  );
 
   return response.data;
 };

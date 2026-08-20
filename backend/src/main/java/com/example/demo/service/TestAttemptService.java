@@ -168,7 +168,8 @@ public class TestAttemptService {
 
     @Transactional
 public TestAttemptResponse submitTest(
-        Long attemptId
+        Long attemptId,
+        boolean autoSubmit
 ) {
 
     TestAttempt attempt = testAttemptRepository
@@ -192,7 +193,7 @@ public TestAttemptResponse submitTest(
     LocalDateTime now = LocalDateTime.now();
 
 
-    if (now.isAfter(attempt.getExpiresAt())) {
+    if (now.isAfter(attempt.getExpiresAt()) && !autoSubmit) {
 
         attempt.setStatus(AttemptStatus.EXPIRED);
 
