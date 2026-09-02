@@ -22,3 +22,19 @@ export const overrideMarks = async (evaluationId, data) => {
 
   return response.data;
 };
+
+export const reEvaluateTest = async (testId) => {
+  const response = await axiosInstance.post(
+    `/admin/tests/${testId}/reevaluate`,
+  );
+
+  return response.data;
+};
+
+export const reEvaluateStudent = async (testId, attemptId) => {
+  const response = await axiosInstance.post(
+    `/admin/tests/${testId}/results/${attemptId}/reevaluate`,
+  );
+
+  return response.data;
+};

@@ -2,7 +2,11 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { useNavigate, useParams } from "react-router-dom";
 
-import { getTestResults } from "../../api/resultApi";
+import {
+  getTestResults,
+  reEvaluateTest,
+  reEvaluateStudent,
+} from "../../api/resultApi";
 import { exportTestResults } from "../../api/exportApi";
 import { deleteAttempt } from "../../api/attemptApi";
 
@@ -15,6 +19,11 @@ function TestResultsPage() {
   const [error, setError] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [deletingAttemptId, setDeletingAttemptId] = useState(null);
+  const [reEvaluatingTest, setReEvaluatingTest] = useState(false);
+  const [reEvaluatingAttemptId, setReEvaluatingAttemptId] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const RESULTS_PER_PAGE = 10;
 
   const loadResults = useCallback(async () => {
     setLoading(true);
@@ -52,6 +61,24 @@ function TestResultsPage() {
       return name.includes(search) || uid.includes(search);
     });
   }, [results, searchTerm]);
+
+  const totalPages = Math.ceil(
+    filteredResults.length / RESULTS_PER_PAGE,
+  );
+
+  const paginatedResults = useMemo(() => {
+    const startIndex =
+      (currentPage - 1) * RESULTS_PER_PAGE;
+
+    return filteredResults.slice(
+      startIndex,
+      startIndex + RESULTS_PER_PAGE,
+    );
+  }, [filteredResults, currentPage]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm]);
 
   const statistics = useMemo(() => {
     const totalStudents = results.length;
@@ -95,6 +122,57 @@ function TestResultsPage() {
       default:
         return "result-status-default";
     }
+  };
+
+  const getAiEvaluationStatus = (result) => {
+    const submissions = result.submissions || [];
+
+    if (submissions.length === 0) {
+      return {
+        label: "PENDING",
+        className: "result-ai-status-pending",
+      };
+    }
+
+    if (
+      submissions.some(
+        (submission) =>
+          submission.status === "PENDING" ||
+          submission.status === "EVALUATING",
+      )
+    ) {
+      return {
+        label: "EVALUATING",
+        className: "result-ai-status-evaluating",
+      };
+    }
+
+    if (
+      submissions.some(
+        (submission) => submission.status === "FAILED",
+      )
+    ) {
+      return {
+        label: "FAILED",
+        className: "result-ai-status-failed",
+      };
+    }
+
+    if (
+      submissions.every(
+        (submission) => submission.status === "EVALUATED",
+      )
+    ) {
+      return {
+        label: "EVALUATED",
+        className: "result-ai-status-evaluated",
+      };
+    }
+
+    return {
+      label: "PENDING",
+      className: "result-ai-status-pending",
+    };
   };
 
   const handleDeleteAttempt = async (result) => {
@@ -147,6 +225,66 @@ function TestResultsPage() {
       window.URL.revokeObjectURL(url);
     } catch (error) {
       alert("Failed to export Excel.");
+    }
+  };
+
+  const handleReEvaluateTest = async () => {
+    const confirmed = window.confirm(
+      "Are you sure you want to re-evaluate all student submissions using AI?",
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    try {
+      setReEvaluatingTest(true);
+
+      await reEvaluateTest(testId);
+
+      await loadResults();
+
+      alert("AI re-evaluation has been started for all students.");
+    } catch (error) {
+      console.error("Failed to re-evaluate test:", error);
+
+      alert(
+        error.response?.data?.message ||
+        "Failed to start AI re-evaluation.",
+      );
+    } finally {
+      setReEvaluatingTest(false);
+    }
+  };
+
+  const handleReEvaluateStudent = async (result) => {
+    const confirmed = window.confirm(
+      `Are you sure you want to re-evaluate ${result.studentName}'s submissions using AI?`,
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    try {
+      setReEvaluatingAttemptId(result.attemptId);
+
+      await reEvaluateStudent(testId, result.attemptId);
+
+      await loadResults();
+
+      alert(
+        `AI re-evaluation has been started for ${result.studentName}.`,
+      );
+    } catch (error) {
+      console.error("Failed to re-evaluate student:", error);
+
+      alert(
+        error.response?.data?.message ||
+        "Failed to start AI re-evaluation.",
+      );
+    } finally {
+      setReEvaluatingAttemptId(null);
     }
   };
 
@@ -247,6 +385,15 @@ function TestResultsPage() {
               value={searchTerm}
               onChange={(event) => setSearchTerm(event.target.value)}
             />
+
+            <button
+              onClick={handleReEvaluateTest}
+              className="ai-reevaluate-test-button"
+              disabled={reEvaluatingTest || loading || results.length === 0}
+            >
+              {reEvaluatingTest ? "Starting AI Re-evaluation..." : "AI Re-evaluate All"}
+            </button>
+
             <button onClick={handleExport} className="export-excel-button">
               Export Excel
             </button>
@@ -281,6 +428,8 @@ function TestResultsPage() {
 
                     <th>Status</th>
 
+                    <th>AI Status</th>
+
                     <th>AI Score</th>
 
                     <th>Final Score</th>
@@ -292,7 +441,7 @@ function TestResultsPage() {
                 </thead>
 
                 <tbody>
-                  {filteredResults.map((result) => (
+                  {paginatedResults.map((result) => (
                     <tr key={result.attemptId}>
                       <td>
                         <div className="student-table-name">
@@ -317,6 +466,20 @@ function TestResultsPage() {
                         >
                           {result.attemptStatus}
                         </span>
+                      </td>
+
+                      <td>
+                        {(() => {
+                          const aiStatus = getAiEvaluationStatus(result);
+
+                          return (
+                            <span
+                              className={`result-ai-status-badge ${aiStatus.className}`}
+                            >
+                              {aiStatus.label}
+                            </span>
+                          );
+                        })()}
                       </td>
 
                       <td>
@@ -345,6 +508,16 @@ function TestResultsPage() {
                           </button>
 
                           <button
+                            className="ai-reevaluate-student-button"
+                            onClick={() => handleReEvaluateStudent(result)}
+                            disabled={reEvaluatingAttemptId === result.attemptId}
+                          >
+                            {reEvaluatingAttemptId === result.attemptId
+                              ? "Re-evaluating..."
+                              : "AI Re-evaluate"}
+                          </button>
+
+                          <button
                             className="delete-attempt-button"
                             onClick={() => handleDeleteAttempt(result)}
                             disabled={deletingAttemptId === result.attemptId}
@@ -359,6 +532,35 @@ function TestResultsPage() {
                   ))}
                 </tbody>
               </table>
+              {totalPages > 1 && (
+                <div className="results-pagination">
+                  <button
+                    className="results-pagination-button"
+                    onClick={() =>
+                      setCurrentPage((page) => Math.max(1, page - 1))
+                    }
+                    disabled={currentPage === 1}
+                  >
+                    ← Previous
+                  </button>
+
+                  <span className="results-pagination-info">
+                    Page {currentPage} of {totalPages}
+                  </span>
+
+                  <button
+                    className="results-pagination-button"
+                    onClick={() =>
+                      setCurrentPage((page) =>
+                        Math.min(totalPages, page + 1),
+                      )
+                    }
+                    disabled={currentPage === totalPages}
+                  >
+                    Next →
+                  </button>
+                </div>
+              )}
             </div>
           )}
         </section>

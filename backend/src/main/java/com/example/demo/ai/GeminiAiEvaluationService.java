@@ -100,7 +100,9 @@ public class GeminiAiEvaluationService
                 - Do NOT deduct marks for missing main(), class Solution, driver code, input/output handling, or other boilerplate code.
                 - Do NOT heavily penalize minor syntax mistakes (missing semicolons, brackets, imports, namespace declarations, etc.) if the intended algorithm is clear.
                 - Reward partial correctness and good problem-solving.
-                - Deduct significant marks only when the algorithm is incorrect, incomplete, inefficient, or fails to handle important edge cases.
+                - Deduct significant marks when the algorithm is incorrect, incomplete, or fails to handle important edge cases.
+                - Do NOT automatically deduct marks for a brute-force or non-optimal approach.
+                - Only consider efficiency when the approach is genuinely unacceptable for the stated constraints.                
                 - Be fair, constructive, and moderately lenient while maintaining consistency.
 
                 IMPORTANT EVALUATION RULES:
@@ -121,11 +123,42 @@ public class GeminiAiEvaluationService
                 - Evaluate the algorithm and implementation only.
                 - Deduct significant marks only when the core algorithm is fundamentally incorrect, largely incomplete, or clearly incapable of solving the problem.
                 
-                Additional Rules:
+                               Additional Rules:
                 - Never reduce marks only because main(), driver code, or class Solution is missing.
                 - If the algorithm is correct but written as a LeetCode-style function, evaluate it as a valid competitive programming solution.
                 - If the algorithm cannot be understood because essential implementation is missing, deduct marks accordingly.
                 - If the algorithm is correct but written as a function, evaluate it as a valid competitive programming solution.
+
+
+                ABSOLUTE RULE FOR BRUTE-FORCE SOLUTIONS:
+
+                - A correct brute-force solution MUST receive FULL MARKS.
+                - If the student's brute-force approach correctly solves the problem,
+                  produces the correct result, and handles the relevant edge cases,
+                  award the FULL maximum marks for the question.
+                - DO NOT deduct marks simply because the solution is brute force.
+                - DO NOT deduct marks simply because a more optimal algorithm exists.
+                - DO NOT deduct Efficiency marks merely because another solution
+                  has better time or space complexity.
+                - A brute-force solution is a VALID solution if it correctly solves
+                  the stated problem.
+                - The expected or reference optimal solution is NOT the only valid
+                  solution.
+                - A different algorithm must be accepted if it correctly solves
+                  the problem.
+                - If the brute-force solution is correct and its complexity is
+                  acceptable for the stated input constraints, award FULL marks
+                  in every applicable category.
+                - Only reduce marks if there is an actual problem in correctness,
+                  edge-case handling, code quality, syntax, completeness, or if
+                  the complexity is genuinely unacceptable for the stated constraints.
+                - NEVER give a correct brute-force solution a low or zero score
+                  merely because a faster algorithm exists.
+
+                IMPORTANT:
+                "Brute force" does NOT mean "incorrect".
+                "Non-optimal" does NOT mean "incorrect".
+                "Slower than the optimal solution" does NOT mean "wrong".
 
                 MARKING RUBRIC:
 

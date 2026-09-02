@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.example.demo.dto.response.EvaluationStatusResponse;
 import java.util.List;
+import com.example.demo.messaging.producer.EvaluationProducer;
 
 @Service
 public class EvaluationService {
@@ -22,16 +23,19 @@ public class EvaluationService {
     private final EvaluationRepository evaluationRepository;
 
     private final AiEvaluationService aiEvaluationService;
+    private final EvaluationProducer evaluationProducer;
 
 
     public EvaluationService(
             SubmissionRepository submissionRepository,
             EvaluationRepository evaluationRepository,
-            AiEvaluationService aiEvaluationService
+            AiEvaluationService aiEvaluationService,
+            EvaluationProducer evaluationProducer
     ) {
         this.submissionRepository = submissionRepository;
         this.evaluationRepository = evaluationRepository;
         this.aiEvaluationService = aiEvaluationService;
+        this.evaluationProducer = evaluationProducer;
     }
 
 
@@ -50,15 +54,6 @@ public class EvaluationService {
                 );
 
 
-        if (evaluationRepository
-                .existsBySubmissionId(submissionId)) {
-
-            throw new RuntimeException(
-                    "This submission has already been evaluated"
-            );
-        }
-
-
         submission.setStatus(
                 SubmissionStatus.EVALUATING
         );
@@ -75,46 +70,63 @@ public class EvaluationService {
             validateAiResult(result);
 
 
-            Evaluation evaluation = new Evaluation();
+            Evaluation evaluation =
+                        evaluationRepository
+                                .findBySubmissionId(submissionId)
+                                .orElseGet(() -> {
 
-            evaluation.setSubmission(submission);
+                                Evaluation newEvaluation =
+                                        new Evaluation();
 
-            evaluation.setTotalScore(result.getScore());
+                                newEvaluation.setSubmission(
+                                        submission
+                                );
 
-            evaluation.setCorrectnessScore(
-                    result.getCorrectnessScore()
-            );
-
-            evaluation.setEdgeCaseScore(
-                    result.getEdgeCaseScore()
-            );
-
-            evaluation.setEfficiencyScore(
-                    result.getEfficiencyScore()
-            );
-
-            evaluation.setCodeQualityScore(
-                    result.getCodeQualityScore()
-            );
-
-            evaluation.setSyntaxScore(
-                    result.getSyntaxScore()
-            );
-
-            evaluation.setConfidence(
-                    result.getConfidence()
-            );
-
-            evaluation.setFeedback(
-                    result.getFeedback()
-            );
-
-            evaluation.setAiProvider("GEMINI");
-            evaluation.setAiModel("gemini-3.1-flash-lite");
+                                return newEvaluation;
+                                });
 
 
-            Evaluation savedEvaluation =
-                    evaluationRepository.save(evaluation);
+                evaluation.setTotalScore(
+                        result.getScore()
+                );
+
+                evaluation.setCorrectnessScore(
+                        result.getCorrectnessScore()
+                );
+
+                evaluation.setEdgeCaseScore(
+                        result.getEdgeCaseScore()
+                );
+
+                evaluation.setEfficiencyScore(
+                        result.getEfficiencyScore()
+                );
+
+                evaluation.setCodeQualityScore(
+                        result.getCodeQualityScore()
+                );
+
+                evaluation.setSyntaxScore(
+                        result.getSyntaxScore()
+                );
+
+                evaluation.setConfidence(
+                        result.getConfidence()
+                );
+
+                evaluation.setFeedback(
+                        result.getFeedback()
+                );
+
+                evaluation.setAiProvider("GEMINI");
+
+                evaluation.setAiModel(
+                        "gemini-3.1-flash-lite"
+                );
+
+
+                Evaluation savedEvaluation =
+                        evaluationRepository.save(evaluation);
 
 
             submission.setStatus(
@@ -322,5 +334,73 @@ public class EvaluationService {
                 evaluatedSubmissions,
                 failedSubmissions
         );
+        }
+
+        @Transactional
+        public void reEvaluateSubmission(Long submissionId) {
+
+        Submission submission =
+                submissionRepository
+                        .findById(submissionId)
+                        .orElseThrow(
+                                () -> new RuntimeException(
+                                        "Submission not found with id: "
+                                                + submissionId
+                                )
+                        );
+                        
+        submission.setStatus(SubmissionStatus.PENDING);
+        submissionRepository.save(submission);
+
+        evaluationProducer.sendSubmissionForEvaluation(
+                submissionId
+        );
+        }
+
+        @Transactional
+        public void reEvaluateAttempt(Long attemptId) {
+
+        List<Submission> submissions =
+                submissionRepository
+                        .findAllByTestAttemptId(attemptId);
+
+        if (submissions.isEmpty()) {
+                throw new RuntimeException(
+                        "No submissions found for this attempt"
+                );
+        }
+
+        for (Submission submission : submissions) {
+
+                submission.setStatus(SubmissionStatus.PENDING);
+                submissionRepository.save(submission);
+
+                evaluationProducer.sendSubmissionForEvaluation(
+                        submission.getId()
+                );
+        }
+        }
+
+        @Transactional
+        public void reEvaluateTest(Long testId) {
+
+        List<Submission> submissions =
+                submissionRepository.findAllByTestAttempt_Test_Id(testId);
+
+        if (submissions.isEmpty()) {
+                throw new RuntimeException(
+                        "No submissions found for this test"
+                );
+        }
+
+        for (Submission submission : submissions) {
+
+                submission.setStatus(SubmissionStatus.PENDING);
+                submissionRepository.save(submission);
+
+                evaluationProducer.sendSubmissionForEvaluation(
+                        submission.getId()
+                );
+        }
         }
 }

@@ -4698,3 +4698,99 @@ button {
   background: #cbd5e1;
   border-radius: 8px;
 }
+
+.ai-reevaluate-test-button {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 8px;
+  margin-right: -180px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.ai-reevaluate-test-button:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.ai-reevaluate-test-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.ai-reevaluate-student-button {
+  padding: 8px 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.ai-reevaluate-student-button:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.ai-reevaluate-student-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.result-ai-status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.result-ai-status-pending {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.result-ai-status-evaluating {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.result-ai-status-evaluated {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.result-ai-status-failed {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.results-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  padding: 18px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.results-pagination-button {
+  padding: 8px 14px;
+  border: 1px solid #d1d5db;
+  border-radius: 7px;
+  background: white;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.results-pagination-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.results-pagination-info {
+  font-size: 14px;
+  font-weight: 600;
+  color: #64748b;
+}
