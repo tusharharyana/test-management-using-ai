@@ -2,7 +2,11 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { useNavigate, useParams } from "react-router-dom";
 
-import { getTestResults } from "../../api/resultApi";
+import {
+  getTestResults,
+  reEvaluateTest,
+  reEvaluateStudent,
+} from "../../api/resultApi";
 import { exportTestResults } from "../../api/exportApi";
 import { deleteAttempt } from "../../api/attemptApi";
 
@@ -15,6 +19,8 @@ function TestResultsPage() {
   const [error, setError] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [deletingAttemptId, setDeletingAttemptId] = useState(null);
+  const [reEvaluatingTest, setReEvaluatingTest] = useState(false);
+  const [reEvaluatingAttemptId, setReEvaluatingAttemptId] = useState(null);
 
   const loadResults = useCallback(async () => {
     setLoading(true);
@@ -150,6 +156,69 @@ function TestResultsPage() {
     }
   };
 
+  const handleReEvaluateTest = async () => {
+    const confirmed = window.confirm(
+      "Are you sure you want to re-evaluate all student submissions using AI?\n\n" +
+      "This will send all submissions for this test back to the AI evaluation queue.",
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    try {
+      setReEvaluatingTest(true);
+
+      await reEvaluateTest(testId);
+
+      alert(
+        "AI re-evaluation has been started for all student submissions.",
+      );
+
+      await loadResults();
+    } catch (error) {
+      console.error("Failed to start AI re-evaluation:", error);
+
+      alert(
+        error.response?.data?.message ||
+        "Failed to start AI re-evaluation.",
+      );
+    } finally {
+      setReEvaluatingTest(false);
+    }
+  };
+
+  const handleReEvaluateStudent = async (result) => {
+    const confirmed = window.confirm(
+      `Are you sure you want to re-evaluate all submissions of ${result.studentName} (${result.studentUid}) using AI?`,
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    try {
+      setReEvaluatingAttemptId(result.attemptId);
+
+      await reEvaluateStudent(testId, result.attemptId);
+
+      alert(
+        `AI re-evaluation has been started for ${result.studentName}.`,
+      );
+
+      await loadResults();
+    } catch (error) {
+      console.error("Failed to start student AI re-evaluation:", error);
+
+      alert(
+        error.response?.data?.message ||
+        "Failed to start AI re-evaluation for this student.",
+      );
+    } finally {
+      setReEvaluatingAttemptId(null);
+    }
+  };
+
   return (
     <div className="teacher-page">
       <header className="teacher-navbar">
@@ -247,6 +316,15 @@ function TestResultsPage() {
               value={searchTerm}
               onChange={(event) => setSearchTerm(event.target.value)}
             />
+
+            <button
+              onClick={handleReEvaluateTest}
+              className="ai-reevaluate-test-button"
+              disabled={reEvaluatingTest || loading || results.length === 0}
+            >
+              {reEvaluatingTest ? "Starting AI Re-evaluation..." : "AI Re-evaluate All"}
+            </button>
+
             <button onClick={handleExport} className="export-excel-button">
               Export Excel
             </button>
@@ -342,6 +420,16 @@ function TestResultsPage() {
                             }
                           >
                             View Details
+                          </button>
+
+                          <button
+                            className="ai-reevaluate-student-button"
+                            onClick={() => handleReEvaluateStudent(result)}
+                            disabled={reEvaluatingAttemptId === result.attemptId}
+                          >
+                            {reEvaluatingAttemptId === result.attemptId
+                              ? "Re-evaluating..."
+                              : "AI Re-evaluate"}
                           </button>
 
                           <button

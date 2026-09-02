@@ -9,18 +9,22 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import com.example.demo.service.EvaluationService;
 
 @RestController
 @RequestMapping("/api/admin")
 public class AdminResultController {
 
     private final AdminResultService adminResultService;
+    private final EvaluationService evaluationService;
 
 
     public AdminResultController(
-            AdminResultService adminResultService
+            AdminResultService adminResultService,
+            EvaluationService evaluationService
     ) {
         this.adminResultService = adminResultService;
+        this.evaluationService = evaluationService;
     }
 
 
@@ -70,4 +74,31 @@ public class AdminResultController {
                 )
         );
     }
+
+    @PostMapping("/tests/{testId}/reevaluate")
+        public ResponseEntity<String> reEvaluateTest(
+                @PathVariable Long testId
+        ) {
+
+        evaluationService.reEvaluateTest(testId);
+
+        return ResponseEntity.ok(
+                "AI re-evaluation started for all submissions"
+        );
+        }
+
+        @PostMapping(
+        "/tests/{testId}/results/{attemptId}/reevaluate"
+        )
+        public ResponseEntity<String> reEvaluateStudent(
+                @PathVariable Long testId,
+                @PathVariable Long attemptId
+        ) {
+
+        evaluationService.reEvaluateAttempt(attemptId);
+
+        return ResponseEntity.ok(
+                "AI re-evaluation started for this student"
+        );
+        }
 }

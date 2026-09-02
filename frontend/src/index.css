@@ -4698,3 +4698,40 @@ button {
   background: #cbd5e1;
   border-radius: 8px;
 }
+
+.ai-reevaluate-test-button {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 8px;
+  margin-right: -180px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.ai-reevaluate-test-button:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.ai-reevaluate-test-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.ai-reevaluate-student-button {
+  padding: 8px 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.ai-reevaluate-student-button:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.ai-reevaluate-student-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
