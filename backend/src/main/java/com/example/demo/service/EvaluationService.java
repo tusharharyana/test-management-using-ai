@@ -336,7 +336,7 @@ public class EvaluationService {
         );
         }
 
-        @Transactional(readOnly = true)
+        @Transactional
         public void reEvaluateSubmission(Long submissionId) {
 
         Submission submission =
@@ -348,13 +348,16 @@ public class EvaluationService {
                                                 + submissionId
                                 )
                         );
+                        
+        submission.setStatus(SubmissionStatus.PENDING);
+        submissionRepository.save(submission);
 
         evaluationProducer.sendSubmissionForEvaluation(
                 submissionId
         );
         }
 
-        @Transactional(readOnly = true)
+        @Transactional
         public void reEvaluateAttempt(Long attemptId) {
 
         List<Submission> submissions =
@@ -369,13 +372,16 @@ public class EvaluationService {
 
         for (Submission submission : submissions) {
 
+                submission.setStatus(SubmissionStatus.PENDING);
+                submissionRepository.save(submission);
+
                 evaluationProducer.sendSubmissionForEvaluation(
                         submission.getId()
                 );
         }
         }
 
-        @Transactional(readOnly = true)
+        @Transactional
         public void reEvaluateTest(Long testId) {
 
         List<Submission> submissions =
@@ -388,6 +394,9 @@ public class EvaluationService {
         }
 
         for (Submission submission : submissions) {
+
+                submission.setStatus(SubmissionStatus.PENDING);
+                submissionRepository.save(submission);
 
                 evaluationProducer.sendSubmissionForEvaluation(
                         submission.getId()
