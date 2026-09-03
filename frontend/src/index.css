@@ -4794,3 +4794,246 @@ button {
   font-weight: 600;
   color: #64748b;
 }
+
+/* =========================================================
+   TEACHER DASHBOARD PAGINATION
+   ========================================================= */
+
+.teacher-dashboard-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  margin-top: 28px;
+  padding: 10px 0 20px;
+}
+
+.teacher-dashboard-pagination-pages {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.teacher-dashboard-pagination-button,
+.teacher-dashboard-pagination-page {
+  min-width: 42px;
+  height: 40px;
+  padding: 0 14px;
+  border: 1px solid #d9def0;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #343b5c;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.teacher-dashboard-pagination-button:hover:not(:disabled),
+.teacher-dashboard-pagination-page:hover:not(.teacher-dashboard-pagination-page-active) {
+  border-color: #5146e5;
+  color: #5146e5;
+  transform: translateY(-1px);
+}
+
+.teacher-dashboard-pagination-button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.teacher-dashboard-pagination-page-active {
+  border-color: #5146e5;
+  background: #5146e5;
+  color: #ffffff;
+  cursor: default;
+}
+
+/* ================================
+   TEST INSTRUCTIONS MODAL
+================================ */
+
+.instructions-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 20px;
+
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(5px);
+}
+
+.instructions-modal {
+  width: 100%;
+  max-width: 650px;
+  max-height: 90vh;
+
+  overflow-y: auto;
+
+  padding: 35px;
+
+  border: 1px solid #e5e7eb;
+  border-radius: 22px;
+
+  background: white;
+
+  box-shadow: 0 25px 70px rgba(15, 23, 42, 0.25);
+
+  animation: instructionsModalAppear 0.25s ease;
+}
+
+@keyframes instructionsModalAppear {
+  from {
+    opacity: 0;
+    transform: translateY(15px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.instructions-icon {
+  width: 58px;
+  height: 58px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  margin: 0 auto 15px;
+
+  border-radius: 16px;
+
+  background: #fff7ed;
+  color: #ea580c;
+
+  font-size: 27px;
+}
+
+.instructions-modal h2 {
+  margin: 0;
+
+  text-align: center;
+
+  font-size: 28px;
+  color: #172033;
+}
+
+.instructions-subtitle {
+  margin: 8px 0 25px;
+
+  text-align: center;
+
+  color: #64748b;
+  line-height: 1.5;
+}
+
+.instructions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.instruction-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+
+  padding: 14px 15px;
+
+  border-radius: 12px;
+
+  line-height: 1.5;
+}
+
+.instruction-item span {
+  flex-shrink: 0;
+
+  font-size: 17px;
+  font-weight: 800;
+}
+
+.instruction-item p {
+  margin: 0;
+
+  color: #334155;
+  font-size: 14px;
+}
+
+.instruction-item.warning {
+  border: 1px solid #fed7aa;
+  background: #fff7ed;
+}
+
+.instruction-item.warning span {
+  color: #ea580c;
+}
+
+.instruction-item.success {
+  border: 1px solid #bbf7d0;
+  background: #f0fdf4;
+}
+
+.instruction-item.success span {
+  color: #16a34a;
+}
+
+.instructions-continue-button {
+  width: 100%;
+
+  margin-top: 25px;
+  padding: 14px 20px;
+
+  border: none;
+  border-radius: 10px;
+
+  background: #4f46e5;
+  color: white;
+
+  font-size: 15px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    opacity 0.2s ease,
+    transform 0.2s ease;
+}
+
+.instructions-continue-button:hover:not(:disabled) {
+  background: #4338ca;
+  transform: translateY(-1px);
+}
+
+.instructions-continue-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+  .instructions-modal {
+    padding: 25px 20px;
+    border-radius: 18px;
+  }
+
+  .instructions-modal h2 {
+    font-size: 24px;
+  }
+
+  .instruction-item {
+    padding: 12px;
+  }
+}
