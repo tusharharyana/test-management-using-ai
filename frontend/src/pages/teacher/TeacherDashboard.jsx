@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import {
@@ -20,6 +20,9 @@ function TeacherDashboard() {
   const [editingTest, setEditingTest] = useState(null);
   const [editTitle, setEditTitle] = useState("");
   const [deletingTest, setDeletingTest] = useState(null);
+  // Pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const TESTS_PER_PAGE = 6;
 
   const loadTests = useCallback(async () => {
     setLoading(true);
@@ -41,6 +44,35 @@ function TeacherDashboard() {
   useEffect(() => {
     loadTests();
   }, [loadTests]);
+
+  // Sort tests by newest first
+  const sortedTests = useMemo(() => {
+    return [...tests].sort((a, b) => b.id - a.id);
+  }, [tests]);
+
+  // Pagination calculations
+  const totalPages = Math.ceil(sortedTests.length / TESTS_PER_PAGE);
+
+  const paginatedTests = useMemo(() => {
+    const startIndex = (currentPage - 1) * TESTS_PER_PAGE;
+
+    return sortedTests.slice(
+      startIndex,
+      startIndex + TESTS_PER_PAGE,
+    );
+  }, [sortedTests, currentPage]);
+
+  // Make sure current page is always valid
+  useEffect(() => {
+    if (totalPages === 0) {
+      setCurrentPage(1);
+      return;
+    }
+
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages);
+    }
+  }, [currentPage, totalPages]);
 
   const handleActivate = async (testId) => {
     setActionLoading(`activate-${testId}`);
@@ -234,10 +266,9 @@ function TeacherDashboard() {
             </button>
           </div>
         ) : (
-          <div className="test-cards-grid">
-            {[...tests]
-              .sort((a, b) => b.id - a.id)
-              .map((test) => (
+          <>
+            <div className="test-cards-grid">
+              {paginatedTests.map((test) => (
                 <article className="teacher-test-card" key={test.id}>
                   <div className="test-card-top">
                     <span
@@ -327,7 +358,50 @@ function TeacherDashboard() {
                   </div>
                 </article>
               ))}
-          </div>
+            </div>
+            {totalPages > 1 && (
+              <div className="teacher-dashboard-pagination">
+                <button
+                  className="teacher-dashboard-pagination-button"
+                  onClick={() =>
+                    setCurrentPage((page) => Math.max(page - 1, 1))
+                  }
+                  disabled={currentPage === 1}
+                >
+                  ← Previous
+                </button>
+
+                <div className="teacher-dashboard-pagination-pages">
+                  {Array.from({ length: totalPages }, (_, index) => index + 1).map(
+                    (page) => (
+                      <button
+                        key={page}
+                        className={`teacher-dashboard-pagination-page ${currentPage === page
+                          ? "teacher-dashboard-pagination-page-active"
+                          : ""
+                          }`}
+                        onClick={() => setCurrentPage(page)}
+                      >
+                        {page}
+                      </button>
+                    ),
+                  )}
+                </div>
+
+                <button
+                  className="teacher-dashboard-pagination-button"
+                  onClick={() =>
+                    setCurrentPage((page) =>
+                      Math.min(page + 1, totalPages),
+                    )
+                  }
+                  disabled={currentPage === totalPages}
+                >
+                  Next →
+                </button>
+              </div>
+            )}
+          </>
         )}
       </main>
       {editingTest && (

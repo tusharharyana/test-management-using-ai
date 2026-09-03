@@ -4794,3 +4794,61 @@ button {
   font-weight: 600;
   color: #64748b;
 }
+
+/* =========================================================
+   TEACHER DASHBOARD PAGINATION
+   ========================================================= */
+
+.teacher-dashboard-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  margin-top: 28px;
+  padding: 10px 0 20px;
+}
+
+.teacher-dashboard-pagination-pages {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.teacher-dashboard-pagination-button,
+.teacher-dashboard-pagination-page {
+  min-width: 42px;
+  height: 40px;
+  padding: 0 14px;
+  border: 1px solid #d9def0;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #343b5c;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.teacher-dashboard-pagination-button:hover:not(:disabled),
+.teacher-dashboard-pagination-page:hover:not(.teacher-dashboard-pagination-page-active) {
+  border-color: #5146e5;
+  color: #5146e5;
+  transform: translateY(-1px);
+}
+
+.teacher-dashboard-pagination-button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.teacher-dashboard-pagination-page-active {
+  border-color: #5146e5;
+  background: #5146e5;
+  color: #ffffff;
+  cursor: default;
+}
