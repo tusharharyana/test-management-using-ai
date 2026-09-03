@@ -386,17 +386,21 @@ function TestResultsPage() {
               onChange={(event) => setSearchTerm(event.target.value)}
             />
 
-            <button
-              onClick={handleReEvaluateTest}
-              className="ai-reevaluate-test-button"
-              disabled={reEvaluatingTest || loading || results.length === 0}
-            >
-              {reEvaluatingTest ? "Starting AI Re-evaluation..." : "AI Re-evaluate All"}
-            </button>
+            <div className="results-header-actions">
+              <button
+                onClick={handleReEvaluateTest}
+                className="ai-reevaluate-test-button"
+                disabled={reEvaluatingTest || loading || results.length === 0}
+              >
+                {reEvaluatingTest
+                  ? "Starting AI Re-evaluation..."
+                  : "AI Re-evaluate All"}
+              </button>
 
-            <button onClick={handleExport} className="export-excel-button">
-              Export Excel
-            </button>
+              <button onClick={handleExport} className="export-excel-button">
+                Export Excel
+              </button>
+            </div>
           </div>
 
           {loading ? (

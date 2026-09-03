@@ -960,7 +960,7 @@ button {
 
 .teacher-content,
 .create-test-container {
-  width: min(1180px, calc(100% - 40px));
+  width: min(1360px, calc(100% - 40px));
   margin: 0 auto;
   padding: 45px 0 70px;
 }
@@ -3168,10 +3168,16 @@ button {
 }
 
 .student-result-actions {
-  display: flex;
-  align-items: center;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(130px, 1fr));
   gap: 8px;
-  flex-wrap: wrap;
+}
+
+.student-result-actions button {
+  width: 100%;
+  min-width: 130px;
+  box-sizing: border-box;
+  white-space: nowrap;
 }
 
 .delete-attempt-button {
@@ -4700,13 +4706,14 @@ button {
 }
 
 .ai-reevaluate-test-button {
-  padding: 10px 16px;
+  padding: 12px 22px;
   border: none;
   border-radius: 8px;
-  margin-right: -180px;
   cursor: pointer;
+  font-size: 15px;
   font-weight: 600;
   transition: opacity 0.2s ease, transform 0.2s ease;
+  white-space: nowrap;
 }
 
 .ai-reevaluate-test-button:hover:not(:disabled) {
@@ -4793,6 +4800,13 @@ button {
   font-size: 14px;
   font-weight: 600;
   color: #64748b;
+}
+
+.results-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: auto;
 }
 
 /* =========================================================
