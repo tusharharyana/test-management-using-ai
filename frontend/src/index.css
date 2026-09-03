@@ -3207,15 +3207,16 @@ button {
 ========================================= */
 
 .edit-test-button {
-  padding: 9px 14px;
-  border: 1px solid #cbd5e1;
-  border-radius: 7px;
+  padding: 0px 14px;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
   background: #ffffff;
   color: #334155;
-  font-size: 13px;
-  font-weight: 600;
+  font-size: 15px;
+  font-weight: 800;
   cursor: pointer;
   transition: 0.2s ease;
+  min-height: 40px;
 }
 
 .edit-test-button:hover {
