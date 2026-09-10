@@ -83,159 +83,155 @@ public class GeminiAiEvaluationService
 
     private String buildPrompt(Submission submission) {
 
-        Question question = submission.getQuestion();
+    Question question = submission.getQuestion();
 
-        return """
-                You are an expert competitive programming evaluator.
+    return """
+            You are an educational coding evaluator.
 
-                Evaluate the student's code against the given problem.
+            Evaluate the student's solution for the given programming problem.
 
-                IMPORTANT:
-                - No hidden test cases are available.
-                - The code is NOT compiled or executed.
-                - Analyze the source code statically.
-                - Focus primarily on the student's algorithm, logic, and problem-solving approach.
-                - This is an educational coding platform, not a strict online judge.
-                - Students may submit LeetCode-style solutions (class Solution), function-only implementations, or complete programs with main().
-                - Do NOT deduct marks for missing main(), class Solution, driver code, input/output handling, or other boilerplate code.
-                - Do NOT heavily penalize minor syntax mistakes (missing semicolons, brackets, imports, namespace declarations, etc.) if the intended algorithm is clear.
-                - Reward partial correctness and good problem-solving.
-                - Deduct significant marks when the algorithm is incorrect, incomplete, or fails to handle important edge cases.
-                - Do NOT automatically deduct marks for a brute-force or non-optimal approach.
-                - Only consider efficiency when the approach is genuinely unacceptable for the stated constraints.                
-                - Be fair, constructive, and moderately lenient while maintaining consistency.
+            MAIN GOAL:
+            Check whether the student's solution correctly solves the problem.
+            Be fair, educational, and moderately lenient. Do not evaluate it like
+            a strict competitive programming judge.
 
-                IMPORTANT EVALUATION RULES:
-                - This is a competitive programming solution, not a complete software application.
-                - Students may submit solutions in different valid formats such as:
-                * LeetCode style (class Solution with only the required function)
-                * Function-only implementation
-                * Complete program with main() and input/output handling
-                - DO NOT deduct marks because the solution does not contain:
-                * main() function
-                * class Solution wrapper
-                * Driver code
-                * Input/output handling
-                * Scanner/cin/cout code
-                * Boilerplate code
-                * Package declarations or include statements, unless they are essential to understanding the solution.
-                - Assume the online judge provides the driver code and invokes the required function correctly.
-                - Evaluate the algorithm and implementation only.
-                - Deduct significant marks only when the core algorithm is fundamentally incorrect, largely incomplete, or clearly incapable of solving the problem.
-                
-                               Additional Rules:
-                - Never reduce marks only because main(), driver code, or class Solution is missing.
-                - If the algorithm is correct but written as a LeetCode-style function, evaluate it as a valid competitive programming solution.
-                - If the algorithm cannot be understood because essential implementation is missing, deduct marks accordingly.
-                - If the algorithm is correct but written as a function, evaluate it as a valid competitive programming solution.
+            IMPORTANT RULES:
 
+            1. CORRECT SOLUTIONS
+            - If the algorithm correctly solves the problem, award FULL MARKS.
+            - Do not deduct marks simply because the solution is not optimal.
+            - A correct brute-force solution is a valid solution.
+            - A different algorithm from the expected/reference solution is valid
+              if it correctly solves the problem.
+            - Do not require the student's solution to match a particular approach.
 
-                ABSOLUTE RULE FOR BRUTE-FORCE SOLUTIONS:
+            2. EFFICIENCY
+            - Do NOT deduct marks merely because a faster or more optimal approach exists.
+            - Consider efficiency only when the chosen complexity is genuinely
+              unreasonable for the stated problem constraints.
+            - If no constraints are provided, do not assume extremely strict limits.
+            - Do not punish a correct solution simply for being O(n^2), O(n log n),
+              or otherwise non-optimal.
 
-                - A correct brute-force solution MUST receive FULL MARKS.
-                - If the student's brute-force approach correctly solves the problem,
-                  produces the correct result, and handles the relevant edge cases,
-                  award the FULL maximum marks for the question.
-                - DO NOT deduct marks simply because the solution is brute force.
-                - DO NOT deduct marks simply because a more optimal algorithm exists.
-                - DO NOT deduct Efficiency marks merely because another solution
-                  has better time or space complexity.
-                - A brute-force solution is a VALID solution if it correctly solves
-                  the stated problem.
-                - The expected or reference optimal solution is NOT the only valid
-                  solution.
-                - A different algorithm must be accepted if it correctly solves
-                  the problem.
-                - If the brute-force solution is correct and its complexity is
-                  acceptable for the stated input constraints, award FULL marks
-                  in every applicable category.
-                - Only reduce marks if there is an actual problem in correctness,
-                  edge-case handling, code quality, syntax, completeness, or if
-                  the complexity is genuinely unacceptable for the stated constraints.
-                - NEVER give a correct brute-force solution a low or zero score
-                  merely because a faster algorithm exists.
+            3. EDGE CASES
+            - Consider whether the algorithm reasonably handles important edge cases.
+            - Do not invent unrealistic hidden requirements.
+            - Minor missing edge cases should result in only a small deduction.
+            - If the main algorithm is correct and edge-case handling is mostly
+              correct, award generous partial credit.
 
-                IMPORTANT:
-                "Brute force" does NOT mean "incorrect".
-                "Non-optimal" does NOT mean "incorrect".
-                "Slower than the optimal solution" does NOT mean "wrong".
+            4. SYNTAX AND FORMAT
+            - Evaluate the intended algorithm even if the code has minor syntax
+              or formatting mistakes.
+            - Do not deduct marks for missing main(), driver code, class Solution,
+              input/output boilerplate, imports, namespace/package declarations,
+              or similar boilerplate when the intended solution is clear.
+            - LeetCode-style, function-only, and complete-program solutions are
+              all acceptable.
+            - Minor syntax mistakes should cause only a small deduction unless
+              they make the solution impossible to understand.
 
-                MARKING RUBRIC:
+            5. PARTIAL CREDIT
+            - Give generous partial credit when the core approach is correct but
+              the implementation contains small mistakes.
+            - If the intended solution is clearly correct but contains minor
+              implementation errors, normally award 70%%-95%% of the marks.
+            - Reserve very low scores for solutions that are fundamentally
+              incorrect, largely incomplete, unrelated, or impossible to
+              understand.
 
-                Maximum Marks for this question: %d
+            6. NO EXECUTION
+            - The code is NOT compiled or executed.
+            - No hidden test-case results are available.
+            - Evaluate the source code statically.
+            - Do not claim that code definitely passes/fails a test case unless
+              this can be determined from the code itself.
 
-                Distribute marks proportionally according to the maximum marks.
+            MARKING:
 
-                Suggested weightage:
+            Maximum Marks: %d
 
-                - Logic & Correctness: 50%%
-                - Edge Case Handling: 20%%
-                - Efficiency: 13%%
-                - Code Quality: 10%%
-                - Syntax & Completeness: 7%%
+            Use these categories:
 
-                Scoring Philosophy:
-                - Reward understanding and the correct approach over perfect syntax.
-                - Award generous partial credit if the algorithm is mostly correct.
-                - Do not be overly strict because the code is not executed.
-                - Reserve very low marks only for completely incorrect or unrelated solutions.
-                - This evaluation is for educational assessment, not competitive ranking.
-                - Give the benefit of the doubt when the student's intended algorithm is clear.
-                - Minor syntax mistakes should result in only small deductions.
-                - If the overall approach is correct but implementation has small mistakes, award between 70%% and 90%% of the available marks.
-                - Use very low scores only when the solution is largely unrelated, missing, or fundamentally incorrect.
-                Here is the problem statement:
+            - Correctness: 50%%
+            - Edge Cases: 20%%
+            - Efficiency: 13%%
+            - Code Quality: 10%%
+            - Syntax & Completeness: 7%%
 
-                PROBLEM TITLE:
-                %s
+            IMPORTANT SCORING PRINCIPLE:
 
-                PROBLEM STATEMENT:
-                %s
+            Correctness is the most important factor.
 
-                EXAMPLES:
-                %s
+            If the student's algorithm is correct and its complexity is reasonable
+            for the stated constraints, award the maximum available marks,
+            including full efficiency marks.
 
-                PROGRAMMING LANGUAGE:
-                %s
+            Do NOT reduce marks because:
+            - a more optimal solution exists
+            - the reference solution is different
+            - the solution uses brute force
+            - the solution uses a different valid algorithm
+            - main() is missing
+            - class Solution is missing
+            - driver/input/output code is missing
+            - minor syntax or boilerplate issues exist
 
-                STUDENT SOURCE CODE:
-                ```%s
-                %s
-                ```
+            Only deduct marks when there is an actual issue with the solution.
 
-                Return ONLY valid JSON.
+            PROBLEM:
 
-                Use exactly this structure:
+            Title:
+            %s
 
-                {
-                  "score": 0,
-                  "correctnessScore": 0,
-                  "edgeCaseScore": 0,
-                  "efficiencyScore": 0,
-                  "codeQualityScore": 0,
-                  "syntaxScore": 0,
-                  "confidence": 0,
-                  "feedback": "A constructive explanation highlighting what the student did correctly, what mistakes were found, and how the solution can be improved."
-                }
+            Problem Statement:
+            %s
 
-                Rules:
-                - score must equal the sum of all five category scores.
-                - score must be between 0 and the Maximum Marks for this question.
-                - confidence must be between 0 and 100.
-                - Do not include markdown.
-                - Do not include ```json.
-                - Return JSON only.
-                """
-                .formatted(
-                        question.getMaxMarks(), 
-                        question.getTitle(),
-                        question.getProblemStatement(),
-                        question.getExamples(),
-                        submission.getLanguage(),
-                        submission.getLanguage(),
-                        submission.getSourceCode()
-                );
-    }
+            Examples:
+            %s
+
+            Language:
+            %s
+
+            STUDENT CODE:
+
+            ```%s
+            %s
+            ```
+
+            Return ONLY valid JSON.
+
+            Use exactly:
+
+            {
+              "score": 0,
+              "correctnessScore": 0,
+              "edgeCaseScore": 0,
+              "efficiencyScore": 0,
+              "codeQualityScore": 0,
+              "syntaxScore": 0,
+              "confidence": 0,
+              "feedback": "Brief constructive feedback explaining what was done correctly and what could be improved."
+            }
+
+            JSON RULES:
+            - score must equal the sum of all five category scores.
+            - score must be between 0 and Maximum Marks.
+            - confidence must be between 0 and 100.
+            - Return JSON only.
+            - Do not include markdown.
+            - Do not include ```json.
+            """
+            .formatted(
+                    question.getMaxMarks(),
+                    question.getTitle(),
+                    question.getProblemStatement(),
+                    question.getExamples(),
+                    submission.getLanguage(),
+                    submission.getLanguage(),
+                    submission.getSourceCode()
+            );
+}
 
 
     private AiEvaluationResult parseResponse(
