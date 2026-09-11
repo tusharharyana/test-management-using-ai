@@ -11,6 +11,7 @@ import { submitTestAttempt } from "../../api/attemptApi";
 import useExamProtection from "../../hooks/useExamProtection";
 import ExamViolationModal from "../../components/exam/ExamViolationModal";
 import { runCode } from "../../api/codeExecutionApi";
+import useScreenWakeLock from "../../hooks/useScreenWakeLock";
 
 const DEFAULT_CODE = {
   CPP: `#include <bits/stdc++.h>
@@ -109,6 +110,7 @@ function TestPage() {
     isExamActive: !examEnded && !submitting,
     onAutoSubmit: () => submitAllAnswers(true),
   });
+  useScreenWakeLock(!examEnded && !submitting);
   const [showRunResult, setShowRunResult] = useState(true);
 
   useEffect(() => {
