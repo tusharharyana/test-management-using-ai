@@ -5052,3 +5052,29 @@ button {
     padding: 12px;
   }
 }
+
+/* =========================================================
+   RUN RESULT COLLAPSE
+   ========================================================= */
+
+.run-result-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.run-result-toggle-button {
+  border: none;
+  background: transparent;
+  color: #475569;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 5px 8px;
+  border-radius: 6px;
+}
+
+.run-result-toggle-button:hover {
+  background: #f1f5f9;
+  color: #1e293b;
+}
