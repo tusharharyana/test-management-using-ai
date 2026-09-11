@@ -108,6 +108,7 @@ function TestPage() {
   } = useExamProtection({
     maxWarnings: 3,
     isExamActive: !examEnded && !submitting,
+    attemptId,
     onAutoSubmit: () => submitAllAnswers(true),
   });
   useScreenWakeLock(!examEnded && !submitting);
