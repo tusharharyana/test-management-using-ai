@@ -95,6 +95,32 @@ public class GeminiAiEvaluationService
             Be fair, educational, and moderately lenient. Do not evaluate it like
             a strict competitive programming judge.
 
+            IMPORTANT SCORING SYSTEM:
+
+            You MUST evaluate the student's code using a FIXED INTERNAL RUBRIC
+            of exactly 30 marks.
+
+            The question's actual maximum marks may be 10, 20, 30, 50, 100,
+            or any other value.
+
+            IGNORE the question's actual maximum marks while calculating the AI
+            evaluation.
+
+            ALWAYS calculate the AI evaluation out of 30.
+
+            The backend will later convert the AI score from /30 to the
+            question's actual maximum marks.
+
+            FIXED 30-MARK RUBRIC:
+
+            - Correctness: maximum 15 marks
+            - Edge Case Handling: maximum 6 marks
+            - Efficiency: maximum 4 marks
+            - Code Quality: maximum 3 marks
+            - Syntax & Completeness: maximum 2 marks
+
+            TOTAL: 30 marks
+
             IMPORTANT RULES:
 
             1. CORRECT SOLUTIONS
@@ -135,7 +161,8 @@ public class GeminiAiEvaluationService
             - Give generous partial credit when the core approach is correct but
               the implementation contains small mistakes.
             - If the intended solution is clearly correct but contains minor
-              implementation errors, normally award 70%%-95%% of the marks.
+              implementation errors, normally award 70%%-95%% of the available
+              30 marks.
             - Reserve very low scores for solutions that are fundamentally
               incorrect, largely incomplete, unrelated, or impossible to
               understand.
@@ -144,20 +171,28 @@ public class GeminiAiEvaluationService
             - The code is NOT compiled or executed.
             - No hidden test-case results are available.
             - Evaluate the source code statically.
-            - Do not claim that code definitely passes/fails a test case unless
+            - Do not claim that code definitely passes or fails a test case unless
               this can be determined from the code itself.
 
-            MARKING:
+            SCORING:
 
-            Maximum Marks: %d
+            Correctness: 0 to 15
+            Edge Case Handling: 0 to 6
+            Efficiency: 0 to 4
+            Code Quality: 0 to 3
+            Syntax & Completeness: 0 to 2
 
-            Use these categories:
+            The total AI score MUST be:
 
-            - Correctness: 50%%
-            - Edge Cases: 20%%
-            - Efficiency: 13%%
-            - Code Quality: 10%%
-            - Syntax & Completeness: 7%%
+            correctnessScore
+            + edgeCaseScore
+            + efficiencyScore
+            + codeQualityScore
+            + syntaxScore
+
+            Therefore:
+
+            score MUST always be between 0 and 30.
 
             IMPORTANT SCORING PRINCIPLE:
 
@@ -215,15 +250,19 @@ public class GeminiAiEvaluationService
             }
 
             JSON RULES:
+            - correctnessScore must be between 0 and 15.
+            - edgeCaseScore must be between 0 and 6.
+            - efficiencyScore must be between 0 and 4.
+            - codeQualityScore must be between 0 and 3.
+            - syntaxScore must be between 0 and 2.
             - score must equal the sum of all five category scores.
-            - score must be between 0 and Maximum Marks.
+            - score must be between 0 and 30.
             - confidence must be between 0 and 100.
             - Return JSON only.
             - Do not include markdown.
             - Do not include ```json.
             """
             .formatted(
-                    question.getMaxMarks(),
                     question.getTitle(),
                     question.getProblemStatement(),
                     question.getExamples(),
