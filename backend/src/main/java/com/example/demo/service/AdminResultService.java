@@ -251,6 +251,8 @@ public class AdminResultService {
         submission.getQuestion().getId(),
 
         submission.getQuestion().getTitle(),
+        
+        submission.getQuestion().getProblemStatement(),
 
         submission.getLanguage(),
 

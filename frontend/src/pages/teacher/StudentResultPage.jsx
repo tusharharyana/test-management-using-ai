@@ -254,7 +254,15 @@ function StudentResultPage() {
                         )}
                       </div>
                     </div>
+                    <div className="student-result-problem-section">
+                      <div className="student-result-problem-heading">
+                        Problem Statement
+                      </div>
 
+                      <div className="student-result-problem-text">
+                        {submission.problemStatement || "Problem statement not available."}
+                      </div>
+                    </div>
                     <div className="submission-meta-row">
                       <span>
                         Language: <strong>{submission.language}</strong>
@@ -277,11 +285,10 @@ function StudentResultPage() {
                         </div>
 
                         <button
-                          className={`copy-code-button ${
-                            copiedCodeId === submission.submissionId
-                              ? "code-copied"
-                              : ""
-                          }`}
+                          className={`copy-code-button ${copiedCodeId === submission.submissionId
+                            ? "code-copied"
+                            : ""
+                            }`}
                           onClick={() => handleCopyCode(submission)}
                         >
                           {copiedCodeId === submission.submissionId
