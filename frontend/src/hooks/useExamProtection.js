@@ -4,8 +4,22 @@ export default function useExamProtection({
   maxWarnings = 3,
   onAutoSubmit,
   isExamActive = true,
+  attemptId,
 }) {
-  const [warningCount, setWarningCount] = useState(0);
+
+  const warningStorageKey = attemptId
+    ? `exam_warning_count_${attemptId}`
+    : null;
+
+  const [warningCount, setWarningCount] = useState(() => {
+    if (!warningStorageKey) {
+      return 0;
+    }
+
+    const savedCount = localStorage.getItem(warningStorageKey);
+
+    return savedCount ? Number(savedCount) : 0;
+  });
 
   const [showViolationModal, setShowViolationModal] = useState(false);
 
@@ -17,6 +31,12 @@ export default function useExamProtection({
 
   // Prevent multiple auto-submit calls
   const autoSubmitTriggeredRef = useRef(false);
+
+  useEffect(() => {
+    if (warningCount >= maxWarnings) {
+      autoSubmitTriggeredRef.current = true;
+    }
+  }, [warningCount, maxWarnings]);
 
   const addWarning = useCallback(
     (reason) => {
@@ -41,6 +61,10 @@ export default function useExamProtection({
 
         const next = previous + 1;
 
+        if (warningStorageKey) {
+          localStorage.setItem(warningStorageKey, String(next));
+        }
+
         if (next >= maxWarnings) {
           autoSubmitTriggeredRef.current = true;
 
@@ -54,7 +78,7 @@ export default function useExamProtection({
         return next;
       });
     },
-    [maxWarnings, onAutoSubmit, isExamActive],
+    [maxWarnings, onAutoSubmit, isExamActive, warningStorageKey],
   );
 
   const continueExam = async () => {
