@@ -15,6 +15,8 @@ public class SubmissionResultResponse {
 
     private String questionTitle;
 
+    private String problemStatement;
+
     private ProgrammingLanguage language;
 
     private SubmissionStatus status;
@@ -35,6 +37,7 @@ public class SubmissionResultResponse {
             Long attemptId,
             Long questionId,
             String questionTitle,
+            String problemStatement,
             ProgrammingLanguage language,
             SubmissionStatus status,
             LocalDateTime submittedAt,
@@ -45,12 +48,38 @@ public class SubmissionResultResponse {
         this.attemptId = attemptId;
         this.questionId = questionId;
         this.questionTitle = questionTitle;
+        this.problemStatement = problemStatement;
         this.language = language;
         this.status = status;
         this.submittedAt = submittedAt;
         this.sourceCode = sourceCode;
         this.evaluation = evaluation;
     }
+
+    public SubmissionResultResponse(
+        Long submissionId,
+        Long attemptId,
+        Long questionId,
+        String questionTitle,
+        ProgrammingLanguage language,
+        SubmissionStatus status,
+        LocalDateTime submittedAt,
+        String sourceCode,
+        EvaluationSummaryResponse evaluation
+) {
+    this(
+        submissionId,
+        attemptId,
+        questionId,
+        questionTitle,
+        null,
+        language,
+        status,
+        submittedAt,
+        sourceCode,
+        evaluation
+    );
+}
 
 
     public Long getSubmissionId() {
@@ -67,6 +96,10 @@ public class SubmissionResultResponse {
 
     public String getQuestionTitle() {
         return questionTitle;
+    }
+
+    public String getProblemStatement() {
+        return problemStatement;
     }
 
     public ProgrammingLanguage getLanguage() {

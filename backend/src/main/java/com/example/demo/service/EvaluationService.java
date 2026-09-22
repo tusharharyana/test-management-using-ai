@@ -86,9 +86,18 @@ public class EvaluationService {
                                 });
 
 
-                evaluation.setTotalScore(
-                        result.getScore()
-                );
+                int questionMaxMarks =
+                        submission.getQuestion().getMaxMarks();
+
+                int aiScoreOutOf30 =
+                        result.getScore();
+
+                int finalScore =
+                        (int) Math.round(
+                                (aiScoreOutOf30 / 30.0) * questionMaxMarks
+                        );
+
+                evaluation.setTotalScore(finalScore);
 
                 evaluation.setCorrectnessScore(
                         result.getCorrectnessScore()

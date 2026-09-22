@@ -4,6 +4,8 @@ import { useNavigate, useParams } from "react-router-dom";
 
 import { getStudentResult, overrideMarks } from "../../api/resultApi";
 
+import { downloadMyTest } from "../../api/exportApi";
+
 function StudentResultPage() {
   const navigate = useNavigate();
 
@@ -24,6 +26,7 @@ function StudentResultPage() {
 
   const [savingOverride, setSavingOverride] = useState(false);
   const [copiedCodeId, setCopiedCodeId] = useState(null);
+  const [downloadingTest, setDownloadingTest] = useState(false);
 
   const loadStudentResult = useCallback(async () => {
     setLoading(true);
@@ -143,6 +146,37 @@ function StudentResultPage() {
       console.error("Failed to copy code:", error);
     }
   };
+
+  const handleDownloadTest = async () => {
+    try {
+      setDownloadingTest(true);
+      setError("");
+
+      const blob = await downloadMyTest(result.attemptId);
+
+      const url = window.URL.createObjectURL(blob);
+
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `Test_${result.attemptId}_${result.studentUid}.pdf`;
+
+      document.body.appendChild(link);
+      link.click();
+
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Failed to download test:", error);
+
+      setError(
+        error.response?.data?.message ||
+        "Unable to download the test PDF.",
+      );
+    } finally {
+      setDownloadingTest(false);
+    }
+  };
+
   return (
     <div className="teacher-page">
       <header className="teacher-navbar">
@@ -215,7 +249,18 @@ function StudentResultPage() {
 
         <section className="evaluation-list-section">
           <div className="evaluation-list-heading">
-            <h2>Question Evaluations</h2>
+            <div className="student-result-evaluation-header">
+              <h2>Question Evaluations</h2>
+
+              <button
+                type="button"
+                className="student-result-download-button"
+                onClick={handleDownloadTest}
+                disabled={downloadingTest}
+              >
+                {downloadingTest ? "Preparing PDF..." : "Download Test"}
+              </button>
+            </div>
 
             <p>
               AI-generated scoring breakdown, confidence, feedback, and teacher
@@ -254,7 +299,15 @@ function StudentResultPage() {
                         )}
                       </div>
                     </div>
+                    <div className="student-result-problem-section">
+                      <div className="student-result-problem-heading">
+                        Problem Statement
+                      </div>
 
+                      <div className="student-result-problem-text">
+                        {submission.problemStatement || "Problem statement not available."}
+                      </div>
+                    </div>
                     <div className="submission-meta-row">
                       <span>
                         Language: <strong>{submission.language}</strong>
@@ -277,11 +330,10 @@ function StudentResultPage() {
                         </div>
 
                         <button
-                          className={`copy-code-button ${
-                            copiedCodeId === submission.submissionId
-                              ? "code-copied"
-                              : ""
-                          }`}
+                          className={`copy-code-button ${copiedCodeId === submission.submissionId
+                            ? "code-copied"
+                            : ""
+                            }`}
                           onClick={() => handleCopyCode(submission)}
                         >
                           {copiedCodeId === submission.submissionId

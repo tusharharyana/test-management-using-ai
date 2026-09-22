@@ -874,7 +874,7 @@ public class PdfExportService {
 
                         Paragraph criteriaHeading =
                                 new Paragraph(
-                                        "HOW YOUR CODE WAS EVALUATED",
+                                        "HOW YOUR CODE WAS EVALUATED OUT OF 30",
                                         boldFont
                                 );
 
