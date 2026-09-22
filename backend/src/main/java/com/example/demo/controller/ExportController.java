@@ -120,4 +120,43 @@ public class ExportController {
                 .headers(headers)
                 .body(pdf);
     }
+
+// =========================================================
+// TEACHER - DOWNLOAD ALL STUDENT RESULTS AS ZIP
+// =========================================================
+
+        @GetMapping("/{testId}/results/zip")
+        public ResponseEntity<byte[]> downloadTestResultsZip(
+                @PathVariable Long testId
+        ) {
+
+        byte[] zip =
+                pdfExportService.generateTestResultsZip(testId);
+
+        String fileName =
+                "Test_"
+                        + testId
+                        + "_Student_Results.zip";
+
+        HttpHeaders headers =
+                new HttpHeaders();
+
+        headers.setContentType(
+                MediaType.parseMediaType(
+                        "application/zip"
+                )
+        );
+
+        headers.setContentDisposition(
+                ContentDisposition
+                        .attachment()
+                        .filename(fileName)
+                        .build()
+        );
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .body(zip);
+        }
 }

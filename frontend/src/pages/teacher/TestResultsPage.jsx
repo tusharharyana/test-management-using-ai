@@ -7,7 +7,10 @@ import {
   reEvaluateTest,
   reEvaluateStudent,
 } from "../../api/resultApi";
-import { exportTestResults } from "../../api/exportApi";
+import {
+  exportTestResults,
+  downloadTestResultsZip,
+} from "../../api/exportApi";
 import { deleteAttempt } from "../../api/attemptApi";
 
 function TestResultsPage() {
@@ -22,6 +25,7 @@ function TestResultsPage() {
   const [reEvaluatingTest, setReEvaluatingTest] = useState(false);
   const [reEvaluatingAttemptId, setReEvaluatingAttemptId] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [downloadingResultsZip, setDownloadingResultsZip] = useState(false);
 
   const RESULTS_PER_PAGE = 10;
 
@@ -288,6 +292,39 @@ function TestResultsPage() {
     }
   };
 
+  const handleDownloadResultsZip = async () => {
+    try {
+      setDownloadingResultsZip(true);
+
+      const blob = await downloadTestResultsZip(testId);
+
+      const url = window.URL.createObjectURL(blob);
+
+      const link = document.createElement("a");
+
+      link.href = url;
+
+      link.download = `Test_${testId}_Student_Results.zip`;
+
+      document.body.appendChild(link);
+
+      link.click();
+
+      link.remove();
+
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Failed to download student results ZIP:", error);
+
+      alert(
+        error.response?.data?.message ||
+        "Failed to download student results ZIP.",
+      );
+    } finally {
+      setDownloadingResultsZip(false);
+    }
+  };
+
   return (
     <div className="teacher-page">
       <header className="teacher-navbar">
@@ -399,6 +436,19 @@ function TestResultsPage() {
 
               <button onClick={handleExport} className="export-excel-button">
                 Export Excel
+              </button>
+              <button
+                onClick={handleDownloadResultsZip}
+                className="download-results-zip-button"
+                disabled={
+                  downloadingResultsZip ||
+                  loading ||
+                  results.length === 0
+                }
+              >
+                {downloadingResultsZip
+                  ? "Preparing ZIP..."
+                  : "Download Results ZIP"}
               </button>
             </div>
           </div>

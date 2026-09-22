@@ -5136,3 +5136,24 @@ button {
 .student-result-evaluation-header h2 {
   margin: 0;
 }
+
+.download-results-zip-button {
+  padding: 12px 22px;
+  border: none;
+  border-radius: 8px;
+  background: #0f766e;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.download-results-zip-button:hover:not(:disabled) {
+  background: #115e59;
+}
+
+.download-results-zip-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

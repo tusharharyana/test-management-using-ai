@@ -25,3 +25,14 @@ export const getEvaluationStatus = async (attemptId) => {
 
   return response.data;
 };
+
+export const downloadTestResultsZip = async (testId) => {
+  const response = await axiosInstance.get(
+    `/tests/${testId}/results/zip`,
+    {
+      responseType: "blob",
+    }
+  );
+
+  return response.data;
+};
