@@ -8,6 +8,7 @@ import com.example.demo.entity.Submission;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
+import java.util.List;
 
 @Service
 public class GeminiAiEvaluationService
@@ -20,6 +21,14 @@ public class GeminiAiEvaluationService
     private final String apiKey;
 
     private final String model;
+
+    private final List<String> fallbackModels = List.of(
+        "gemini-3.1-flash-lite",
+        "gemini-3.5-flash-lite",
+        "gemini-3.5-flash",
+        "gemini-3.6-flash",
+        "gemini-flash-lite-latest"
+);
 
 
     public GeminiAiEvaluationService(
@@ -38,48 +47,108 @@ public class GeminiAiEvaluationService
     }
 
 
-    @Override
-    public AiEvaluationResult evaluate(
-            Submission submission
-    ) {
+        @Override
+        public AiEvaluationResult evaluate(
+                Submission submission
+        ) {
 
-        try {
+        String prompt = buildPrompt(submission);
 
-            String prompt = buildPrompt(submission);
+        Exception lastException = null;
 
-            String url =
-                    "https://generativelanguage.googleapis.com/v1beta/models/"
-                            + model
-                            + ":generateContent?key="
-                            + apiKey;
+        for (String currentModel : fallbackModels) {
 
+                try {
 
-            String requestBody = objectMapper.writeValueAsString(
-                    new GeminiRequest(prompt)
-            );
+                System.out.println(
+                        "Trying Gemini model: " + currentModel
+                                + " for submission: "
+                                + submission.getId()
+                );
 
+                String url =
+                        "https://generativelanguage.googleapis.com/v1beta/models/"
+                                + currentModel
+                                + ":generateContent?key="
+                                + apiKey;
 
-            String response = restClient
-                    .post()
-                    .uri(url)
-                    .header("Content-Type", "application/json")
-                    .body(requestBody)
-                    .retrieve()
-                    .body(String.class);
+                String requestBody =
+                        objectMapper.writeValueAsString(
+                                new GeminiRequest(prompt)
+                        );
 
+                String response =
+                        restClient
+                                .post()
+                                .uri(url)
+                                .header(
+                                        "Content-Type",
+                                        "application/json"
+                                )
+                                .body(requestBody)
+                                .retrieve()
+                                .body(String.class);
 
-            return parseResponse(response);
+                AiEvaluationResult result =
+                        parseResponse(response);
 
-        } catch (Exception exception) {
+                System.out.println(
+                        "AI evaluation successful using model: "
+                                + currentModel
+                                + " for submission: "
+                                + submission.getId()
+                );
 
-            throw new RuntimeException(
-                    "AI evaluation failed: "
-                            + exception.getMessage(),
-                    exception
-            );
+                return result;
+
+                } catch (Exception exception) {
+
+                lastException = exception;
+
+                String message =
+                        exception.getMessage() == null
+                                ? ""
+                                : exception.getMessage();
+
+                if (isQuotaError(message)) {
+
+                        System.out.println(
+                                "Quota/rate limit reached for model: "
+                                        + currentModel
+                                        + ". Trying next model..."
+                        );
+
+                        continue;
+                }
+
+                throw new RuntimeException(
+                        "AI evaluation failed using model "
+                                + currentModel
+                                + ": "
+                                + message,
+                        exception
+                );
+                }
         }
-    }
 
+        throw new RuntimeException(
+                "AI evaluation failed: all configured Gemini models "
+                        + "are currently unavailable due to quota/rate limits.",
+                lastException
+        );
+        }
+
+        private boolean isQuotaError(String message) {
+
+        String lowerMessage =
+                message.toLowerCase();
+
+        return lowerMessage.contains("429")
+                || lowerMessage.contains("too many requests")
+                || lowerMessage.contains("resource_exhausted")
+                || lowerMessage.contains("quota exceeded")
+                || lowerMessage.contains("rate limit");
+        }
 
     private String buildPrompt(Submission submission) {
 
