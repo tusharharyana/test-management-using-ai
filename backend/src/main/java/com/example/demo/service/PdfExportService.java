@@ -17,6 +17,13 @@ import java.util.List;
 import com.example.demo.entity.Evaluation;
 import com.example.demo.repository.EvaluationRepository;
 
+import java.io.IOException;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
+
 @Service
 public class PdfExportService {
 
@@ -1088,6 +1095,97 @@ public class PdfExportService {
             );
         }
     }
+
+    public byte[] generateTestResultsZip(Long testId) {
+
+    try {
+
+        List<TestAttempt> attempts =
+                testAttemptRepository.findAllByTestId(testId);
+
+        ByteArrayOutputStream outputStream =
+                new ByteArrayOutputStream();
+
+        ZipOutputStream zipOutputStream =
+                new ZipOutputStream(outputStream);
+
+        Set<String> usedFileNames =
+                new HashSet<>();
+
+        for (TestAttempt attempt : attempts) {
+
+            byte[] pdf =
+                    generateTestPdf(attempt.getId());
+
+            String studentName =
+                    attempt.getStudentName() != null
+                            ? attempt.getStudentName()
+                            : "Student";
+
+            String studentUid =
+                    attempt.getStudentUid() != null
+                            ? attempt.getStudentUid()
+                            : String.valueOf(attempt.getId());
+
+            String safeStudentName =
+                    studentName.replaceAll(
+                            "[^a-zA-Z0-9-_]",
+                            "_"
+                    );
+
+            String safeStudentUid =
+                    studentUid.replaceAll(
+                            "[^a-zA-Z0-9-_]",
+                            "_"
+                    );
+
+            String fileName =
+                    safeStudentName
+                            + "_"
+                            + safeStudentUid
+                            + ".pdf";
+
+            int counter = 1;
+
+            while (usedFileNames.contains(fileName)) {
+
+                fileName =
+                        safeStudentName
+                                + "_"
+                                + safeStudentUid
+                                + "_"
+                                + counter
+                                + ".pdf";
+
+                counter++;
+            }
+
+            usedFileNames.add(fileName);
+
+            ZipEntry zipEntry =
+                    new ZipEntry(fileName);
+
+            zipOutputStream.putNextEntry(zipEntry);
+
+            zipOutputStream.write(pdf);
+
+            zipOutputStream.closeEntry();
+        }
+
+        zipOutputStream.finish();
+        zipOutputStream.close();
+
+        return outputStream.toByteArray();
+
+    } catch (Exception exception) {
+
+        throw new RuntimeException(
+                "Failed to generate test results ZIP: "
+                        + exception.getMessage(),
+                exception
+        );
+    }
+}
 
 
     // =========================================================
