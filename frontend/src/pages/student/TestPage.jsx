@@ -109,7 +109,21 @@ function TestPage() {
     maxWarnings: 3,
     isExamActive: !examEnded && !submitting,
     attemptId,
-    onAutoSubmit: () => submitAllAnswers(true),
+    onAutoSubmit: () => {
+      if (!navigator.onLine) {
+        setError(
+          "Maximum warnings reached, but internet connection is not available. Your test is frozen. Please reconnect and submit your test."
+        );
+
+        setTimeout(() => {
+          setError("");
+        }, 3000);
+
+        return;
+      }
+
+      submitAllAnswers(true);
+    },
   });
   useScreenWakeLock(!examEnded && !submitting);
   const [showRunResult, setShowRunResult] = useState(true);
@@ -243,7 +257,7 @@ function TestPage() {
    */
 
   const handleCodeChange = (newCode) => {
-    if (!currentQuestionKey) {
+    if (!currentQuestionKey || warningCount >= maxWarnings) {
       return;
     }
 
@@ -467,17 +481,22 @@ function TestPage() {
    */
 
   const handleTimeUp = useCallback(() => {
-    // Already ended
     if (examEndedRef.current) {
       return;
     }
 
-    // Mark exam as ended immediately
-    examEndedRef.current = true;
+    if (!navigator.onLine) {
+      setError(
+        "Time is up, but internet connection is not available. Your answers are saved on this device. Please reconnect and submit your test."
+      );
 
-    setExamEnded(true);
+      setTimeout(() => {
+        setError("");
+      }, 3000);
 
-    // Automatically submit
+      return;
+    }
+
     submitAllAnswers(true);
   }, [submitAllAnswers]);
 
@@ -587,6 +606,7 @@ function TestPage() {
               language={language}
               code={currentAnswer.code}
               onChange={handleCodeChange}
+              readOnly={warningCount >= maxWarnings}
             />
           </div>
 
@@ -620,8 +640,22 @@ function TestPage() {
 
               <button
                 className="final-submit-button"
-                disabled={submitting || !isOnline}
-                onClick={() => setShowSubmitConfirmation(true)}
+                disabled={submitting}
+                onClick={() => {
+                  if (!isOnline) {
+                    setError(
+                      "Internet connection is not available. Your answers are saved on this device. Please reconnect and try submitting again."
+                    );
+
+                    setTimeout(() => {
+                      setError("");
+                    }, 3000);
+
+                    return;
+                  }
+
+                  setShowSubmitConfirmation(true);
+                }}
               >
                 {submitting ? "Submitting..." : "Submit Test"}
               </button>
