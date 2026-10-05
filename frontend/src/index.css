@@ -945,10 +945,10 @@ button {
 }
 
 .create-test-button {
-  min-height: 43px;
-  padding: 0 18px;
+  min-height: 40px;
+  padding: 0 14px;
   border: none;
-  border-radius: 9px;
+  border-radius: 8px;
   background: #4f46e5;
   color: white;
   font-weight: 800;
