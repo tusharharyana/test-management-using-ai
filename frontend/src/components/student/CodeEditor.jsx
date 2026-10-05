@@ -1,6 +1,6 @@
 import Editor from "@monaco-editor/react";
 
-function CodeEditor({ language, code, onChange }) {
+function CodeEditor({ language, code, onChange, readOnly = false, }) {
   const getMonacoLanguage = () => {
     switch (language) {
       case "CPP":
@@ -45,6 +45,7 @@ function CodeEditor({ language, code, onChange }) {
           padding: {
             top: 16,
           },
+          readOnly: readOnly,
         }}
       />
     </div>
