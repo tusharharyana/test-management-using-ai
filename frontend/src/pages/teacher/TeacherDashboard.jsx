@@ -251,12 +251,6 @@ function TeacherDashboard() {
         </div>
 
         <div className="teacher-navbar-actions">
-          <button
-            className="create-test-button"
-            onClick={() => navigate("/teacher/tests/create")}
-          >
-            + Create New Test
-          </button>
 
           <button className="teacher-logout-button" onClick={handleLogout}>
             Logout
@@ -310,6 +304,13 @@ function TeacherDashboard() {
             </span>
           </button>
         </section>
+
+        <button
+          className="create-test-button"
+          onClick={() => navigate("/teacher/tests/create")}
+        >
+          + New Test
+        </button>
 
         {error && (
           <div className="dashboard-error">
