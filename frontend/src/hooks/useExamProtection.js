@@ -39,7 +39,7 @@ export default function useExamProtection({
   }, [warningCount, maxWarnings]);
 
   const addWarning = useCallback(
-    (reason) => {
+    (reason, warningIncrement = 1) => {
       // Exam has already ended
       if (!isExamActive) {
         return;
@@ -59,7 +59,10 @@ export default function useExamProtection({
           return previous;
         }
 
-        const next = previous + 1;
+        const next = Math.min(
+          previous + warningIncrement,
+          maxWarnings,
+        );
 
         if (warningStorageKey) {
           localStorage.setItem(warningStorageKey, String(next));
@@ -320,5 +323,7 @@ export default function useExamProtection({
     maxWarnings,
 
     isFullscreen,
+
+    addWarning,
   };
 }
