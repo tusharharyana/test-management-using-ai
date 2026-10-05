@@ -9,6 +9,10 @@ import {
   deleteTest,
 } from "../../api/testApi";
 import { logoutTeacher } from "../../utils/teacherAuth";
+import {
+  getAiEvaluationStatus,
+  updateAiEvaluationStatus,
+} from "../../api/systemSettingApi";
 
 function TeacherDashboard() {
   const navigate = useNavigate();
@@ -17,6 +21,8 @@ function TeacherDashboard() {
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(null);
   const [error, setError] = useState("");
+  const [aiEvaluationEnabled, setAiEvaluationEnabled] = useState(false);
+  const [aiEvaluationLoading, setAiEvaluationLoading] = useState(true);
   const [editingTest, setEditingTest] = useState(null);
   const [editTitle, setEditTitle] = useState("");
   const [deletingTest, setDeletingTest] = useState(null);
@@ -39,6 +45,22 @@ function TeacherDashboard() {
     } finally {
       setLoading(false);
     }
+  }, []);
+
+  useEffect(() => {
+    const loadAiEvaluationSetting = async () => {
+      try {
+        const data = await getAiEvaluationStatus();
+
+        setAiEvaluationEnabled(Boolean(data.enabled));
+      } catch (error) {
+        console.error("Failed to load AI evaluation setting:", error);
+      } finally {
+        setAiEvaluationLoading(false);
+      }
+    };
+
+    loadAiEvaluationSetting();
   }, []);
 
   useEffect(() => {
@@ -73,6 +95,28 @@ function TeacherDashboard() {
       setCurrentPage(totalPages);
     }
   }, [currentPage, totalPages]);
+
+  const handleAiEvaluationToggle = async () => {
+    const newValue = !aiEvaluationEnabled;
+
+    setAiEvaluationLoading(true);
+    setError("");
+
+    try {
+      const data = await updateAiEvaluationStatus(newValue);
+
+      setAiEvaluationEnabled(Boolean(data.enabled));
+    } catch (error) {
+      console.error("Failed to update AI evaluation setting:", error);
+
+      setError(
+        error.response?.data?.message ||
+        "Unable to update AI evaluation setting."
+      );
+    } finally {
+      setAiEvaluationLoading(false);
+    }
+  };
 
   const handleActivate = async (testId) => {
     setActionLoading(`activate-${testId}`);
@@ -207,12 +251,6 @@ function TeacherDashboard() {
         </div>
 
         <div className="teacher-navbar-actions">
-          <button
-            className="create-test-button"
-            onClick={() => navigate("/teacher/tests/create")}
-          >
-            + Create New Test
-          </button>
 
           <button className="teacher-logout-button" onClick={handleLogout}>
             Logout
@@ -233,6 +271,46 @@ function TeacherDashboard() {
             </p>
           </div>
         </section>
+
+        <section className="ai-evaluation-setting-card">
+          <div className="ai-evaluation-setting-info">
+            <span className="ai-evaluation-setting-label">
+              AI Evaluation
+            </span>
+
+            <span className="ai-evaluation-setting-description">
+              Automatically send submitted coding solutions for AI evaluation.
+            </span>
+          </div>
+
+          <button
+            type="button"
+            className={`ai-evaluation-toggle ${aiEvaluationEnabled ? "ai-evaluation-toggle-on" : ""
+              }`}
+            onClick={handleAiEvaluationToggle}
+            disabled={aiEvaluationLoading}
+            aria-pressed={aiEvaluationEnabled}
+          >
+            <span className="ai-evaluation-toggle-track">
+              <span className="ai-evaluation-toggle-thumb" />
+            </span>
+
+            <span className="ai-evaluation-toggle-text">
+              {aiEvaluationLoading
+                ? "Loading..."
+                : aiEvaluationEnabled
+                  ? "ON"
+                  : "OFF"}
+            </span>
+          </button>
+        </section>
+
+        <button
+          className="create-test-button"
+          onClick={() => navigate("/teacher/tests/create")}
+        >
+          + New Test
+        </button>
 
         {error && (
           <div className="dashboard-error">
