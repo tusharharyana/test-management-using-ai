@@ -105,6 +105,7 @@ function TestPage() {
     showViolationModal,
     violationReason,
     maxWarnings,
+    addWarning,
   } = useExamProtection({
     maxWarnings: 3,
     isExamActive: !examEnded && !submitting,
@@ -606,6 +607,12 @@ function TestPage() {
               language={language}
               code={currentAnswer.code}
               onChange={handleCodeChange}
+              onSecurityViolation={() => {
+                addWarning(
+                  "Large multi-line code insertion detected.",
+                  3
+                );
+              }}
               readOnly={warningCount >= maxWarnings}
             />
           </div>
