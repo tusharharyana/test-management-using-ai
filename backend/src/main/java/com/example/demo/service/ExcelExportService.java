@@ -18,6 +18,7 @@ import com.example.demo.repository.TestRepository;
 import com.example.demo.entity.TestAttempt;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.time.format.DateTimeFormatter;      
 
 @Service
 public class ExcelExportService {
@@ -38,6 +39,8 @@ public class ExcelExportService {
     ) {
 
         try {
+
+            DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd-MMM-yyyy hh:mm a");
 
             List<Evaluation> evaluations =
                     evaluationRepository.findBySubmission_TestAttempt_Test_Id(
@@ -135,9 +138,10 @@ public class ExcelExportService {
                 );
 
                 row.createCell(9).setCellValue(
-                        submission.getSubmittedAt()
-                                .toString()
-                );
+                        submission.getSubmittedAt() != null ? submission.getSubmittedAt()
+                        .format(dateTimeFormatter)
+                : "Not Submitted"
+);
             }
 
             for (int i = 0; i <= 9; i++) {
@@ -162,6 +166,7 @@ public class ExcelExportService {
         totalHeader.createCell(3).setCellValue("Final Score");
         totalHeader.createCell(4).setCellValue("Maximum Marks");
         totalHeader.createCell(5).setCellValue("Percentage");
+        totalHeader.createCell(6).setCellValue("Submitted At");
 
         // Group evaluations by student attempt
         Map<Long, List<Evaluation>> evaluationsByAttempt =
@@ -237,10 +242,16 @@ public class ExcelExportService {
         row.createCell(5).setCellValue(
                 percentage
         );
+        row.createCell(6).setCellValue(
+        attempt.getSubmittedAt() != null
+                ? attempt.getSubmittedAt()
+                        .format(dateTimeFormatter)
+                : "Not Submitted"       
+        );
         }
 
         // Auto-size Total Result columns
-        for (int i = 0; i <= 5; i++) {
+        for (int i = 0; i <= 6; i++) {
         totalSheet.autoSizeColumn(i);
         }
 

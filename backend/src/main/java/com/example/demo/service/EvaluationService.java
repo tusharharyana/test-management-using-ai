@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.example.demo.dto.response.EvaluationStatusResponse;
 import java.util.List;
 import com.example.demo.messaging.producer.EvaluationProducer;
+import com.example.demo.service.SystemSettingService;
 
 @Service
 public class EvaluationService {
@@ -24,19 +25,22 @@ public class EvaluationService {
 
     private final AiEvaluationService aiEvaluationService;
     private final EvaluationProducer evaluationProducer;
+    private final SystemSettingService systemSettingService;
 
 
     public EvaluationService(
-            SubmissionRepository submissionRepository,
-            EvaluationRepository evaluationRepository,
-            AiEvaluationService aiEvaluationService,
-            EvaluationProducer evaluationProducer
-    ) {
-        this.submissionRepository = submissionRepository;
-        this.evaluationRepository = evaluationRepository;
-        this.aiEvaluationService = aiEvaluationService;
-        this.evaluationProducer = evaluationProducer;
-    }
+        SubmissionRepository submissionRepository,
+        EvaluationRepository evaluationRepository,
+        AiEvaluationService aiEvaluationService,
+        EvaluationProducer evaluationProducer,
+        SystemSettingService systemSettingService
+        ) {
+    this.submissionRepository = submissionRepository;
+    this.evaluationRepository = evaluationRepository;
+    this.aiEvaluationService = aiEvaluationService;
+    this.evaluationProducer = evaluationProducer;
+    this.systemSettingService = systemSettingService;
+}
 
 
     @Transactional
@@ -348,6 +352,8 @@ public class EvaluationService {
         @Transactional
         public void reEvaluateSubmission(Long submissionId) {
 
+        ensureAiEvaluationEnabled();
+
         Submission submission =
                 submissionRepository
                         .findById(submissionId)
@@ -368,7 +374,8 @@ public class EvaluationService {
 
         @Transactional
         public void reEvaluateAttempt(Long attemptId) {
-
+        
+        ensureAiEvaluationEnabled();
         List<Submission> submissions =
                 submissionRepository
                         .findAllByTestAttemptId(attemptId);
@@ -393,6 +400,8 @@ public class EvaluationService {
         @Transactional
         public void reEvaluateTest(Long testId) {
 
+        ensureAiEvaluationEnabled();        
+
         List<Submission> submissions =
                 submissionRepository.findAllByTestAttempt_Test_Id(testId);
 
@@ -412,4 +421,13 @@ public class EvaluationService {
                 );
         }
         }
+
+        private void ensureAiEvaluationEnabled() {
+
+    if (!systemSettingService.isAiEvaluationEnabled()) {
+        throw new RuntimeException(
+                "AI evaluation is currently disabled"
+        );
+    }
+}
 }

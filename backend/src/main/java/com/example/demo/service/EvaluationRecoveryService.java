@@ -16,17 +16,27 @@ public class EvaluationRecoveryService {
 
     private final SubmissionRepository submissionRepository;
     private final EvaluationProducer evaluationProducer;
+    private final SystemSettingService systemSettingService;
 
     public EvaluationRecoveryService(
-            SubmissionRepository submissionRepository,
-            EvaluationProducer evaluationProducer
-    ) {
-        this.submissionRepository = submissionRepository;
-        this.evaluationProducer = evaluationProducer;
-    }
+        SubmissionRepository submissionRepository,
+        EvaluationProducer evaluationProducer,
+        SystemSettingService systemSettingService
+) {
+    this.submissionRepository = submissionRepository;
+    this.evaluationProducer = evaluationProducer;
+    this.systemSettingService = systemSettingService;
+}
 
     @Scheduled(fixedDelay = 60000)
     public void recoverPendingSubmissions() {
+
+        if (!systemSettingService.isAiEvaluationEnabled()) {
+        System.out.println(
+                "AI evaluation is disabled. Skipping pending submission recovery."
+        );
+        return;
+}
 
         List<Submission> pendingSubmissions =
                 submissionRepository.findByStatus(

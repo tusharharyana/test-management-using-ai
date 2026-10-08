@@ -12,6 +12,9 @@ import {
   downloadTestResultsZip,
 } from "../../api/exportApi";
 import { deleteAttempt } from "../../api/attemptApi";
+import {
+  getAiEvaluationStatus as getGlobalAiEvaluationStatus,
+} from "../../api/systemSettingApi";
 
 function TestResultsPage() {
   const navigate = useNavigate();
@@ -26,6 +29,9 @@ function TestResultsPage() {
   const [reEvaluatingAttemptId, setReEvaluatingAttemptId] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [downloadingResultsZip, setDownloadingResultsZip] = useState(false);
+
+  const [aiEvaluationEnabled, setAiEvaluationEnabled] = useState(false);
+  const [aiEvaluationLoading, setAiEvaluationLoading] = useState(true);
 
   const RESULTS_PER_PAGE = 10;
 
@@ -45,6 +51,24 @@ function TestResultsPage() {
       setLoading(false);
     }
   }, [testId]);
+
+  useEffect(() => {
+    const loadAiEvaluationSetting = async () => {
+      try {
+        const data = await getGlobalAiEvaluationStatus();
+        setAiEvaluationEnabled(Boolean(data.enabled));
+      } catch (error) {
+        console.error(
+          "Failed to load AI evaluation setting:",
+          error
+        );
+      } finally {
+        setAiEvaluationLoading(false);
+      }
+    };
+
+    loadAiEvaluationSetting();
+  }, []);
 
   useEffect(() => {
     loadResults();
@@ -427,7 +451,7 @@ function TestResultsPage() {
               <button
                 onClick={handleReEvaluateTest}
                 className="ai-reevaluate-test-button"
-                disabled={reEvaluatingTest || loading || results.length === 0}
+                disabled={!aiEvaluationEnabled || aiEvaluationLoading || reEvaluatingTest || loading || results.length === 0}
               >
                 {reEvaluatingTest
                   ? "Starting AI Re-evaluation..."
@@ -564,7 +588,7 @@ function TestResultsPage() {
                           <button
                             className="ai-reevaluate-student-button"
                             onClick={() => handleReEvaluateStudent(result)}
-                            disabled={reEvaluatingAttemptId === result.attemptId}
+                            disabled={reEvaluatingAttemptId === result.attemptId || !aiEvaluationEnabled || aiEvaluationLoading}
                           >
                             {reEvaluatingAttemptId === result.attemptId
                               ? "Re-evaluating..."
