@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { downloadMyTest, getEvaluationStatus } from "../../api/exportApi";
+import {
+  getAiEvaluationStatus,
+} from "../../api/systemSettingApi";
 function SubmissionSuccessPage() {
   const navigate = useNavigate();
   const [downloading, setDownloading] = useState(false);
@@ -8,10 +11,30 @@ function SubmissionSuccessPage() {
   const [evaluationStatus, setEvaluationStatus] = useState("IN_PROGRESS");
   const [evaluationProgress, setEvaluationProgress] = useState(null);
   const storedResult = sessionStorage.getItem("lastSubmissionResult");
+  const [aiEvaluationEnabled, setAiEvaluationEnabled] = useState(true);
+  const [aiEvaluationLoading, setAiEvaluationLoading] = useState(true);
+
+  useEffect(() => {
+    const loadAiEvaluationSetting = async () => {
+      try {
+        const data = await getAiEvaluationStatus();
+        setAiEvaluationEnabled(Boolean(data.enabled));
+      } catch (error) {
+        console.error(
+          "Failed to load AI evaluation setting:",
+          error
+        );
+      } finally {
+        setAiEvaluationLoading(false);
+      }
+    };
+
+    loadAiEvaluationSetting();
+  }, []);
 
   useEffect(() => {
     if (document.fullscreenElement) {
-      document.exitFullscreen().catch(() => {});
+      document.exitFullscreen().catch(() => { });
     }
   }, []);
 
@@ -89,7 +112,12 @@ function SubmissionSuccessPage() {
           <button
             className="submission-success-check-btn"
             onClick={handleCheckEvaluation}
-            disabled={checkingEvaluation || evaluationStatus === "COMPLETED"}
+            disabled={
+              aiEvaluationLoading ||
+              !aiEvaluationEnabled ||
+              checkingEvaluation ||
+              evaluationStatus === "COMPLETED"
+            }
           >
             {checkingEvaluation
               ? "Checking..."
@@ -106,29 +134,36 @@ function SubmissionSuccessPage() {
           <h1>Test Submitted Successfully</h1>
 
           <p>
-            {evaluationStatus === "COMPLETED"
-              ? "Your results are ready."
-              : "Your test has been submitted. AI evaluation is in progress."}
+            {!aiEvaluationEnabled
+              ? "Your test has been submitted successfully."
+              : evaluationStatus === "COMPLETED"
+                ? "Your results are ready."
+                : "Your test has been submitted. AI evaluation is in progress."}
           </p>
 
           {/* Evaluation status */}
-          <div
-            className={`submission-success-status ${
-              evaluationStatus === "COMPLETED"
+          {aiEvaluationEnabled && (
+            <div
+              className={`submission-success-status ${evaluationStatus === "COMPLETED"
                 ? "submission-success-status-completed"
                 : evaluationStatus === "FAILED"
                   ? "submission-success-status-failed"
                   : "submission-success-status-pending"
-            }`}
-          >
-            {evaluationStatus === "COMPLETED" && <>✓ AI Evaluation Completed</>}
+                }`}
+            >
+              {evaluationStatus === "COMPLETED" && (
+                <>✓ AI Evaluation Completed</>
+              )}
 
-            {evaluationStatus === "IN_PROGRESS" && (
-              <>⏳ AI Evaluation in Progress</>
-            )}
+              {evaluationStatus === "IN_PROGRESS" && (
+                <>⏳ AI Evaluation in Progress</>
+              )}
 
-            {evaluationStatus === "FAILED" && <>⚠ AI Evaluation Failed</>}
-          </div>
+              {evaluationStatus === "FAILED" && (
+                <>⚠ AI Evaluation Failed</>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Bottom actions */}
@@ -136,7 +171,10 @@ function SubmissionSuccessPage() {
           <button
             className="submission-success-download-btn"
             onClick={handleDownloadTest}
-            disabled={downloading || evaluationStatus !== "COMPLETED"}
+            disabled={
+              downloading ||
+              (aiEvaluationEnabled && evaluationStatus !== "COMPLETED")
+            }
           >
             {downloading ? "Preparing PDF..." : "Download My Test"}
           </button>
